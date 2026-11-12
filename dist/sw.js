@@ -1,5 +1,5 @@
-const CACHE='quizkrutt-m3-v3';
-const FILES=['./','./index.html','./style.css?v=m3-3','./app.js?v=m3-3','./questions.js?v=m3-3','./game.js?v=m3-3','./packs.js?v=m3-3','./pack-format.js?v=m3-3','./catalog.js?v=m3-3','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png',...['mix','world','nature','culture','sport','science'].map(id=>'./icons/'+id+'.svg')];
+const CACHE='quizkrutt-m4-v1';
+const FILES=['./','./index.html','./style.css?v=m4-1','./app.js?v=m4-1','./questions.js?v=m4-1','./game.js?v=m4-1','./duel.js?v=m4-1','./packs.js?v=m4-1','./pack-format.js?v=m4-1','./catalog.js?v=m4-1','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png',...['mix','world','nature','culture','sport','science'].map(id=>'./icons/'+id+'.svg')];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(self.clients.claim()));
 self.addEventListener('fetch',event=>{

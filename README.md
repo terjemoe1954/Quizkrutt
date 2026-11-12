@@ -1,4 +1,4 @@
-# Quizkrutt – M3
+# Quizkrutt – M4
 
 Separat, byggfri PWA for iPhone, Android og nettleser. Ingen npm-avhengigheter.
 Privat testversjon: https://quizkrutt.terjemoe54.chatgpt.site
@@ -40,7 +40,7 @@ omstart. Se QUALITY_CHECKLIST.md for faktisk nettlesertest og begrensninger,
 CONTENT_REVIEW.md for redaksjonell gjennomgang og kildestikkprøver,
 og MILESTONES.md for neste arbeid.
 
-Nedlastbare pakker er levert i M3. Duell kommer senere. Valgfrie Google Fonts faller tilbake
+Nedlastbare pakker er levert i M3. Duell på samme telefon er levert i M4. Nettduell kommer eventuelt senere. Valgfrie Google Fonts faller tilbake
 til systemfonter uten nett; emoji varierer mellom plattformer.
 
 ## M3 – nedlastbare quizpakker
@@ -81,3 +81,30 @@ Pakkeresultater og sett-historikk avgrenses med pakke-ID og versjon. En aktiv
 pakkerunde beholder egne spørsmålsøyeblikksbilder, slik at den kan fullføres selv
 etter sletting eller oppdatering av pakken. Sletting krever bekreftelse og
 fjerner innholdet, men ikke resultater. Nye runder krever ny nedlasting.
+
+## M4 – Duell på sofaen
+
+På forsiden velger to spillere «Spill mot en venn». Bruk ulike kallenavn på
+1–20 tegn, velg en av de seks grunnkategoriene, et nivå og 5 eller 10 spørsmål
+per spiller. Alle duellnivåer er åpne. Appen trekker startspiller, og spillerne
+bytter på telefonen etter hvert spørsmål. Ingen konto, server eller nett trengs
+under spill når offlinekopien er klar.
+
+Spørsmålene fordeles i to adskilte sett med samme antall fra hver faktagruppe
+på valgt nivå. Begge får eksempelvis 2/2/1 spørsmål fra de tre temagruppene i en
+kort duell, eller 4/3/3 i en lang. Ingen spørsmål deles mellom spillerne i samme
+kamp. Dette balanserer tema og nivå, men er ikke empirisk kalibrert lik vanskelighet.
+Dueller bruker grunnspillets spørsmål; nedlastbare pakker inngår ikke i M4.
+
+Hver tur starter på en skjerm uten spørsmål eller fasit. Spilleren velger
+«Jeg er … – vis min tur». Etter svaret vises forklaring og «Skjul og gi videre».
+Ved appbytte skjules også en åpen tur bak overleveringsskjermen. Hver spiller
+ser egne poeng underveis; begge resultatene vises når alle turene er fullført.
+Riktig svar gir 100 poeng uten tidsbonus. Høyeste sum vinner; lik sum gir uavgjort.
+Omkamp beholder navn og valg og trekker nye sett, uten garanti om at spørsmål
+fra forrige kamp ikke gjentas.
+
+Duellen holdes kun i minnet. Lukking eller omlasting avslutter den. Kallenavn
+og kampresultater lagres ikke eller sendes til en server. «Avslutt duellen» og
+hjemlenken krever bekreftelse under kamp. Verken fullført eller avbrutt duell
+endrer soloresultater, merker, sett-historikk, pakkehistorikk eller påbegynt solorunde.

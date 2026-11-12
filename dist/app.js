@@ -1,12 +1,14 @@
-import {catalog} from './catalog.js?v=m3-3';
-import {createPackLibrary,packKey,recommendPacks} from './packs.js?v=m3-3';
-import {categories,levelNames} from './questions.js?v=m3-3';
-import {createStore,unlocked,startRound,answerRound,advanceRound,questionFor,scoreRound,summary,startPackRound} from './game.js?v=m3-3';
+import {createDuel,validateNames,currentPlayer,currentIndex,duelQuestion,duelScores,openDuelTurn,answerDuel,advanceDuel,hideDuel,duelWinner} from './duel.js?v=m4-1';
+import {catalog} from './catalog.js?v=m4-1';
+import {createPackLibrary,packKey,recommendPacks} from './packs.js?v=m4-1';
+import {categories,levelNames} from './questions.js?v=m4-1';
+import {createStore,unlocked,startRound,answerRound,advanceRound,questionFor,scoreRound,summary,startPackRound} from './game.js?v=m4-1';
 const app=document.querySelector('#app');
 let storage;try{storage=window.localStorage;}catch{storage={getItem(){throw Error('Utilgjengelig');}};}
 const libraryStore=createPackLibrary(storage,catalog);
 const store=createStore(storage),loaded=store.load();
-let state=loaded.state,saveError=loaded.error,category=null,view='home',lastResult=null;
+let state=loaded.state,saveError=loaded.error,category=null,view='home',lastResult=null,duel=null;
+let duelDraft={names:['',''],category:'mix',level:0,count:5};
 const letters=['A','B','C','D'];
 const categoryById=id=>categories.find(c=>c.id===id);
 const record=(id,l)=>state.results[`${id}:${l}`];
@@ -18,8 +20,10 @@ function home(){
  view='home';const stats=summary(state),active=state.active,target=active??state.lastPlayed;
  show(`<section class="hero"><div><div class="eyebrow">EN LITEN PAUSE. LITT MER PEILING.</div><h1>Gi hjernen din<br>litt <span class="highlight">konfetti.</span></h1><p>Verden er full av artige ting å vite.<br>Velg et tema, og se hva du kan!</p><span class="mini">✦ GRATIS HJERNETRIM · INGEN TIDSPRESS</span></div><div class="mascot" aria-hidden="true"><span class="spark">✧</span><div class="blob"><span class="face">•ᴗ•</span></div><span class="speech">Klar for et lite aha?</span></div></section>
  <section class="journey" aria-label="Din fremdrift"><div><span class="eyebrow">GRUNNSPILLET · DIN QUIZREISE</span><h2>${stats.badges?`${stats.badges} av 18 merker`:'Ditt første aha venter!'}</h2><p>${stats.rounds} ${stats.rounds===1?'fullført runde':'fullførte runder'} · 540 spørsmål å utforske</p></div><div class="badge-track" aria-label="${stats.badges} av 18 nivåer bestått">${categories.map(c=>`<span title="${c.name}: ${[0,1,2].filter(l=>(record(c.id,l)?.best??0)>=700).length} av 3 merker"><img src="icons/${c.id}.svg" alt=""><small>${[0,1,2].map(l=>(record(c.id,l)?.best??0)>=700?'★':'☆').join('')}</small></span>`).join('')}</div>${target?`<button class="primary" id="continue">${active?'Fortsett runden':'Spill videre'} →</button><p class="continue-label">${escape(target.type==='pack'?target.packTitle:categoryById(target.category).name)} · ${levelNames[target.level]}${active?` · Spørsmål ${active.index+1} av 10`:''}</p>`:''}</section>
+ <section class="duel-banner"><div class="duel-friends" aria-hidden="true"><span>•ᴗ•</span><span>•ᴗ•</span></div><div><span class="eyebrow">EN TELEFON. TO NYSGJERRIGE HODER.</span><h2>Duell på sofaen</h2><p>Hvem har mest quizkrutt? Bytt på telefonen og finn det ut.</p></div><button class="primary" id="openDuel">Spill mot en venn ↗</button></section>
  <section><div class="sectionhead"><div><h2>Hva er du nysgjerrig på?</h2><p>Seks temaer. Tre nivåer. Masse små seire.</p></div><span class="mini">06 KATEGORIER Å UTFORSKE</span></div><div class="cards">${categories.map(c=>{const count=[0,1,2].filter(l=>(record(c.id,l)?.best??0)>=700).length;return `<button class="card" data-category="${c.id}" style="--tint:${c.color}"><span class="icon" aria-hidden="true"><img src="icons/${c.id}.svg" alt=""></span><h3>${c.name}</h3><p>${c.description}</p><span class="tag">90 SPØRSMÅL · ${count}/3 MERKER</span><span class="arrow" aria-hidden="true">↗</span></button>`;}).join('')}</div></section><section class="pack-banner"><div><span class="eyebrow">NYE TEMAER, MER QUIZKRUTT</span><h2>Finn ditt neste aha.</h2><p>Seks quizpakker med 120 nye spørsmål.<br>Last ned favorittene og ta dem med uten nett.</p><p class="pack-overview">${catalog.filter(p=>libraryStore.read(p.id).pack).length} ${catalog.filter(p=>libraryStore.read(p.id).pack).length===1?'pakke nedlastet':'pakker nedlastet'} · ${Object.values(state.packProgress??{}).reduce((n,p)=>n+p.rounds,0)} ${Object.values(state.packProgress??{}).reduce((n,p)=>n+p.rounds,0)===1?'pakkerunde':'pakkerunder'} spilt</p></div><button class="primary" id="openLibrary">Flere quizer ↓</button></section><p class="local-note">Fremdriften lagres i denne nettleseren på denne enheten. Ingen konto eller synkronisering. Sletting av nettsteddata fjerner fremdriften.</p>`);
  app.querySelectorAll('[data-category]').forEach(b=>b.onclick=()=>{category=categoryById(b.dataset.category);levels();});
+ document.querySelector('#openDuel').onclick=duelSetup;
  document.querySelector('#openLibrary').onclick=()=>libraryView();
  if(target)document.querySelector('#continue').onclick=()=>{category=categoryById(target.category);active?resume():levels();};
 }
@@ -107,11 +111,47 @@ document.querySelector('#removeCancel').onclick=()=>document.querySelector('#rem
 document.querySelector('#removeConfirm').onclick=()=>{document.querySelector('#removeDialog').close();try{libraryStore.remove(removeId);downloads.delete(removeId);libraryMessage='Pakkeinnholdet er fjernet. Resultatene er beholdt.';}catch(error){libraryMessage=error.message;}libraryView(true);};
 for(const event of ['online','offline'])window.addEventListener(event,()=>{if(view==='library')libraryView(true);});
 window.addEventListener('storage',event=>{if(event.key?.startsWith('quizkrutt.pack.')&&view==='library')libraryView(true);});
+
+function duelSetup(){
+ view='duel-setup';duel=null;
+ show(`<section class="panel duel-setup"><button class="back" id="duelSetupBack">← Forsiden</button><div class="duel-friends" aria-hidden="true"><span>•ᴗ•</span><span>•ᴗ•</span></div><div class="eyebrow">LITT VENNLIG KONKURRANSE</div><h1>Duell på<br><span class="highlight">sofaen.</span></h1><p>Velg to kallenavn. Dere bytter på telefonen og får like mange spørsmål i samme kategori og nivå.</p><form id="duelForm"><div class="duel-names"><label>Spiller 1<input id="playerOne" name="playerOne" maxlength="20" required autocomplete="off" placeholder="F.eks. Ada" value="${escape(duelDraft.names[0])}"></label><span class="versus" aria-hidden="true">VS</span><label>Spiller 2<input id="playerTwo" name="playerTwo" maxlength="20" required autocomplete="off" placeholder="F.eks. Leo" value="${escape(duelDraft.names[1])}"></label></div><div class="duel-options"><label>Kategori<select id="duelCategory">${categories.map(c=>`<option value="${c.id}" ${duelDraft.category===c.id?'selected':''}>${c.name}</option>`).join('')}</select></label><label>Nivå<select id="duelLevel">${levelNames.map((name,l)=>`<option value="${l}" ${duelDraft.level===l?'selected':''}>${name}</option>`).join('')}</select></label><label>Lengde<select id="duelCount"><option value="5" ${duelDraft.count===5?'selected':''}>5 spørsmål hver</option><option value="10" ${duelDraft.count===10?'selected':''}>10 spørsmål hver</option></select></label></div><p id="duelError" class="form-error" role="alert"></p><button class="primary" type="submit">Start duellen →</button></form><div class="duel-rules"><h2>Sånn spiller dere</h2><ol><li>Appen trekker hvem som starter.</li><li>Les, velg et svar og se en kort forklaring. Riktig svar gir 100 poeng.</li><li>Trykk «Skjul og gi videre» før den andre tar telefonen.</li></ol><p>Ulike spørsmål, samme fordeling av temaer. Alle tre nivåene er åpne i duell. Ingen tidspress.</p></div><p class="local-note">Solospillets fremdrift og påbegynte runde beholdes. Duellen lagres ikke; lukking eller omlasting avslutter den. Spill uten nett etter at appens offlinekopi er klar.</p></section>`);
+ document.querySelector('#duelSetupBack').onclick=home;
+ document.querySelector('#duelForm').onsubmit=e=>{
+  e.preventDefault();const form=e.currentTarget;
+  duelDraft={names:[form.elements.playerOne.value,form.elements.playerTwo.value],category:document.querySelector('#duelCategory').value,level:Number(document.querySelector('#duelLevel').value),count:Number(document.querySelector('#duelCount').value)};
+  try{validateNames(duelDraft.names);duel=createDuel(duelDraft);renderDuel();}catch(error){document.querySelector('#duelError').textContent=error.message;}
+ };
+}
+function requestQuitDuel(){document.querySelector('#duelQuitDialog').showModal();}
+function renderDuel(){
+ view='duel';if(duel.phase==='finished'){duelResult();return;}
+ const player=currentPlayer(duel),name=escape(duel.names[player]),c=categoryById(duel.category),step=currentIndex(duel)+1;
+ if(duel.phase==='handover'){
+  show(`<section class="panel handover player-${player}"><button class="back" id="duelQuit">← Avslutt duellen</button><div class="handover-card"><div class="duel-avatar" aria-hidden="true">•ᴗ•</div><div class="eyebrow">GI TELEFONEN TIL</div><h1>${name}</h1><p>Din tur · Spørsmål ${step} av ${duel.count}<br>${c.name} · ${levelNames[duel.level]}</p><p class="handover-hint">Spørsmål og svar er skjult.<br>Vent til du har telefonen for deg selv.</p><button class="primary" id="revealDuel">Jeg er ${name} – vis min tur →</button></div><p class="local-note">Bytt på telefonen etter hver tur. Resultatet kommer når begge har svart på alle spørsmålene.</p></section>`);
+  document.querySelector('#revealDuel').onclick=()=>{duel=openDuelTurn(duel);renderDuel();};
+ }else{
+  const q=duelQuestion(duel),answered=duel.phase==='feedback',choice=duel.answers[player][step-1],right=choice===q.correct;
+  show(`<section class="panel duel-question player-${player}"><button class="back" id="duelQuit">← Avslutt duellen</button><div class="duel-turn-label"><span class="player-dot"></span><span>Din tur, <strong>${name}</strong></span><span>${duelScores(duel)[player]} poeng</span></div><p class="duel-category">${c.name} · ${levelNames[duel.level]}</p><div class="progress" role="progressbar" aria-label="Dine besvarte spørsmål" aria-valuemin="0" aria-valuemax="${duel.count}" aria-valuenow="${duel.answers[player].length}"><div style="width:${duel.answers[player].length/duel.count*100}%"></div></div><div class="eyebrow">DITT SPØRSMÅL ${step} AV ${duel.count}</div><h2 class="question">${escape(q.question)}</h2><div class="answers">${q.options.map((option,i)=>`<button class="answer ${answered&&i===q.correct?'correct':answered&&i===choice?'wrong':''}" data-duel-answer="${i}" ${answered?'disabled':''}><span class="letter">${letters[i]}</span><span>${escape(option)}</span></button>`).join('')}</div><div id="duelFeedback" role="status" aria-live="polite">${answered?`<div class="feedback"><strong>${right?'✦ Helt riktig! +100 poeng':`Godt forsøk! Riktig svar: ${escape(q.options[q.correct])}.`}</strong><p>${escape(q.explanation)}</p><button class="primary" id="duelNext">${duel.turn===duel.count*2-1?'Se duellresultatet':'Skjul og gi videre →'}</button></div>`:''}</div></section>`);
+  if(answered){document.querySelector('#duelNext').onclick=()=>{duel=advanceDuel(duel);renderDuel();};document.querySelector('#duelNext').focus({preventScroll:true});}
+  else app.querySelectorAll('[data-duel-answer]').forEach(b=>b.onclick=()=>{duel=answerDuel(duel,Number(b.dataset.duelAnswer));renderDuel();});
+ }
+ document.querySelector('#duelQuit').onclick=requestQuitDuel;
+}
+function duelResult(){
+ view='duel-result';const winner=duelWinner(duel),scores=duelScores(duel);
+ show(`<section class="panel results duel-results"><div class="medal" aria-hidden="true">${winner==='tie'?'✦':'★'}</div><div class="eyebrow" style="justify-content:center">DUELLEN ER FULLFØRT</div><h1 class="result-title">${winner==='tie'?'Delt sofa. Delt seier!':`${escape(duel.names[winner])} vinner!`}</h1><p>${winner==='tie'?'Uavgjort! Dere har like mye quizkrutt denne gangen.':'Godt spilt, begge to! Klar for en omkamp?'}<br>${categoryById(duel.category).name} · ${levelNames[duel.level]}</p><div class="duel-scorecards">${duel.names.map((name,p)=>`<article class="duel-scorecard player-${p} ${winner===p?'duel-winner':''}"><div class="duel-avatar" aria-hidden="true">•ᴗ•</div><h2>${escape(name)}</h2><strong>${scores[p]} <small>poeng</small></strong><p>${scores[p]/100} av ${duel.count} riktige<br>${duel.answers[p].length} turer spilt</p><span class="pill">${winner==='tie'?'Uavgjort':winner===p?'Vinner':'God innsats!'}</span></article>`).join('')}</div><div class="actions"><button class="primary" id="duelRematch">Omkamp ↻</button><button class="secondary" id="duelChange">Endre spillere eller tema</button><button class="secondary" id="duelHome">Forsiden</button></div><p class="local-note">Solospillets resultater og merker er uendret. Duellresultatet lagres ikke.</p></section>`);
+ document.querySelector('#duelRematch').onclick=()=>{duel=createDuel(duelDraft);renderDuel();};
+ document.querySelector('#duelChange').onclick=duelSetup;
+ document.querySelector('#duelHome').onclick=()=>{duel=null;home();};
+}
+document.querySelector('#duelQuitKeep').onclick=()=>document.querySelector('#duelQuitDialog').close();
+document.querySelector('#duelQuitConfirm').onclick=()=>{document.querySelector('#duelQuitDialog').close();duel=null;home();};
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&duel&&view==='duel'&&['question','feedback'].includes(duel.phase)){duel=hideDuel(duel);renderDuel();}});
 const replace=document.querySelector('#replaceDialog');
 document.querySelector('#replaceCancel').onclick=()=>replace.close();
 document.querySelector('#replaceResume').onclick=()=>{replace.close();resume();};
 document.querySelector('#replaceStart').onclick=()=>{replace.close();pendingAction?.();};
-document.querySelector('#brand').onclick=e=>{e.preventDefault();home();};
+document.querySelector('#brand').onclick=e=>{e.preventDefault();if(duel&&duel.phase!=='finished'){requestQuitDuel();return;}duel=null;home();};
 document.querySelector('#help').onclick=()=>document.querySelector('#info').showModal();
 document.querySelector('#closeInfo').onclick=()=>document.querySelector('#info').close();
 window.addEventListener('storage',e=>{if(e.key==='quizkrutt.progress.v2'||e.key===null){saveError='Fremdriften er endret i en annen fane. Last siden på nytt for å hente den.';updateStorageNotice();}});
@@ -122,9 +162,9 @@ async function prepareOffline(){
   try{const registration=await navigator.serviceWorker.register('./sw.js');registration.update().catch(()=>{});}catch{/* Eksisterende offlinekopi kontrolleres også når nettet er borte. */}
   await navigator.serviceWorker.ready;
   const keys=await caches.keys();
-  const cache=keys.includes('quizkrutt-m3-v3')?await caches.open('quizkrutt-m3-v3'):null;
-  const ready=cache&&await cache.match(new URL('./game.js?v=m3-3',location.href).href);
-  document.querySelector('#offline').textContent=ready?'M3 er klargjort for bruk uten nett. Åpne appen én gang på nett etter installasjon.':'En oppdatering klargjøres. Åpne appen igjen på nett før du prøver uten nett.';
+  const cache=keys.includes('quizkrutt-m4-v1')?await caches.open('quizkrutt-m4-v1'):null;
+  const ready=cache&&await cache.match(new URL('./game.js?v=m4-1',location.href).href);
+  document.querySelector('#offline').textContent=ready?'M4 er klargjort for bruk uten nett. Åpne appen én gang på nett etter installasjon.':'En oppdatering klargjøres. Åpne appen igjen på nett før du prøver uten nett.';
  }catch{document.querySelector('#offline').textContent='Bruk uten nett kunne ikke bekreftes. Fremdriften lagres lokalt, men åpne appen på nett før du prøver uten nett.';}
 }
 home();prepareOffline();

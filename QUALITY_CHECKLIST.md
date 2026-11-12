@@ -61,3 +61,25 @@ lagringsrydding på telefon, full skjermlesertest og uavhengig innholdsredaksjon
 - Nettleser: forsøk på ny nedlasting med serveren stoppet viste tydelig feil og
   «Prøv nedlasting igjen», mens nedlastede pakker fortsatt kunne spilles.
 - Biblioteket kontrollert ved 1200 px uten vannrett overløp; alle seks pakker vises.
+
+## M4 – kontroll 12. november 2026
+
+- 34 automatiske tester består: de 26 eksisterende og åtte duelltester.
+- Alle 18 kategori-/nivåvalg prøvd med 5/10 spørsmål og begge startspillere.
+  Begge får like mange spørsmål fra hver faktagruppe, uten felles spørsmål.
+- Vinner, uavgjort, annenhver tur, doble svar og skjuling ved appbytte er testet.
+- Ugyldige/lignende kallenavn, nivåer og svar avvises.
+- Duellmotoren leser spørsmål, men endrer ingen solo- eller pakkeposter.
+- Nettleser: full duell endte 500–500, omkamp endte 500–0 med riktig vinner.
+- Nettleser: overlevering hadde null spørsmåls-/svarelementer i DOM-en.
+- Nettleser: like navn avvist; valg av ekspert/10 spørsmål og lange navn fungerte.
+- Nettleser: Avslutt/Fortsett og hjemlenkens avslutningsbekreftelse fungerte.
+- Etter avsluttet duell var to solomerker, to pakker, pakkehistorikk og påbegynt
+  pakkerunde med 100 poeng beholdt. Omlasting beholdt solofremdriften.
+- Mobilbredde 320/390 px: oppsett, overlevering, spørsmål og resultater prøvd.
+  Ingen vannrett overløp på overlevering med lange navn eller på resultat ved 320 px.
+- Server stoppet etter klar M4-offlinekopi: appen startet og en hel duell ble
+  fullført med riktig vinner (500–0), uten server.
+- Fysisk iPhone/Android og reelt appbytte/låseskjerm gjenstår. Appbytte er dekket
+  av motortest; den faktiske visibilitychange-flyten er ikke manuelt prøvd på telefon.
+- Dueller og kallenavn lagres ikke ved lukking/omlasting. Ingen nettduell i M4.

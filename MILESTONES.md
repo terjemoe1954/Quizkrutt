@@ -1,7 +1,7 @@
 # Quizkrutt – appidé og milepæler
 
 Dato: 12. november 2026
-Status: M1–M3 implementert som separat PWA. Quizkrutt er en installérbar webapp for iPhone og Android. M4–M6 gjenstår.
+Status: M1–M4 implementert som separat PWA. Quizkrutt er en installérbar webapp for iPhone og Android. M5 og lanseringskontrollene i M6 gjenstår.
 
 ## Navn
 
@@ -139,9 +139,9 @@ Annonser, betaling, offentlig toppliste og konto/synkronisering inngår ikke i f
 
 ## Neste konkrete steg
 
-1. Prøv M3 på fysisk iPhone og Android, inkludert nedlasting og flymodus.
+1. Prøv M4-duell på fysisk iPhone og Android, inkludert overlevering og flymodus.
 2. Samle tilbakemeldinger om ordlyd og vanskelighetsgrad.
-3. Vurder M4: to spillere på samme telefon.
+3. Fullfør M6-kontroller og vurder senere M5: nettduell med en venn.
 
 ## M1 – gjennomført 12. november 2026
 
@@ -179,3 +179,16 @@ Annonser, betaling, offentlig toppliste og konto/synkronisering inngår ikke i f
 - Katalogen følger apputgivelser; JSON-innhold hentes fra samme private Site etter valg.
 - Ingen KI-generering, kontosynkronisering eller fjernredigeringssystem inngår.
 - Se QUALITY_CHECKLIST.md for faktisk verifikasjon og telefonkontroller som gjenstår.
+
+## M4 – implementert og kontrollert 12. november 2026
+
+- «Duell på sofaen» tilgjengelig direkte fra forsiden.
+- To ulike kallenavn, seks kategorier, tre nivåer og 5 eller 10 spørsmål hver.
+- Tilfeldig startspiller og annenhver tur på samme telefon.
+- To adskilte spørsmålssett med samme fordeling mellom faktagrupper på valgt nivå.
+- Overleveringsskjerm uten spørsmål/svar mellom hver tur, også ved appbytte.
+- Egne poeng underveis, deretter vinner/uavgjort, begge resultater og omkamp.
+- Bekreftet avslutning via knapp eller hjemlenke; solofremdrift beholdes.
+- Duellen er lokal og lagres ikke ved lukking eller omlasting.
+- 34 automatiske tester består, inkludert alle kategori-/nivåvalg og begge lengder.
+- Se QUALITY_CHECKLIST.md for nettlesertester og gjenstående fysisk telefontest.
