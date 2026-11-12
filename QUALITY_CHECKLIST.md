@@ -107,3 +107,22 @@ Gjenstår: to fysiske telefoner, Sites-innlogging på begge, langvarig frakoblin
 full skjermlesertest og bredere redaksjonell kontroll. Lokal API-test bruker ekte
 SQLite med D1-grensesnitt, ikke Cloudflare-infrastruktur. Produksjonskontroll
 rapporteres separat etter publisering.
+
+## M6 – kontroll 12. november 2026
+
+- 54 automatiske tester: eksisterende spill-/pakke-/duell-/API-regresjon og nye
+  tester for innstillinger, lyd av, feil ved lagring og service worker-livsløp.
+- Offlineinstallasjon avviser omdirigert innloggingsside, feil MIME og ufullstendig
+  cache. Klarmerke skrives sist; forrige gyldige appcache beholdes ved oppdatering.
+- Nettleser: 200 % tekst ved 320 px, justert overskrift uten vannrett overløp.
+- Innstillinger beholdt etter omlasting; Escape lukket dialog og returnerte fokus.
+- Introduksjon med tastatur, videreknapp flyttet fokus til kategorioverskriften.
+- Gjenopptatt pakkerunde beholdt 100 poeng og eksisterende merker/nedlastinger.
+- Server stoppet: oppstart fra cache, gjenopptak, neste spørsmål og tastatursvar
+  fungerte; riktig svar ble annonsert i stabilt aria-live-felt.
+- Spørsmålsmelding viste forventet spørsmål/fasit/ID uten spilleradgang eller navn.
+- Tilgjengelighetskontrollen gjelder semantikk, fokus og tastatur i testnettleseren,
+  ikke faktisk VoiceOver/TalkBack-opplesing eller full WCAG-sertifisering.
+
+Fysisk iPhone/Android, installasjon, ekte skjermleser, lyd på telefon og bredere
+redaksjonell gjennomgang gjenstår i LAUNCH_CHECKLIST.md.

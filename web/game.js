@@ -1,5 +1,5 @@
-import {validId,validQuestion,validatePack} from './pack-format.js?v=m5-2';
-import {bank,categories} from './questions.js?v=m5-2';
+import {validId,validQuestion,validatePack} from './pack-format.js?v=m6-2';
+import {bank,categories} from './questions.js?v=m6-2';
 export const STORAGE_KEY='quizkrutt.progress.v2';
 const byId=new Map(bank.map(q=>[q.id,q]));
 const bucket=(category,level)=>`${category}:${level}`;

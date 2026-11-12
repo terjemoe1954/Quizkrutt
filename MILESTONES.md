@@ -1,7 +1,7 @@
 # Quizkrutt – appidé og milepæler
 
 Dato: 12. november 2026
-Status: M1–M5 implementert som separat PWA. Quizkrutt er en installérbar webapp for iPhone og Android. Lanseringskontrollene i M6 gjenstår.
+Status: M1–M5 implementert som separat PWA. Quizkrutt er en installérbar webapp for iPhone og Android. M6 er en privat lanseringskandidat; fysiske plattformtester gjenstår.
 
 ## Navn
 
@@ -117,6 +117,9 @@ Ferdig når:
 - Hver spiller får bare tilgang til sine egne dueller og tillatte kampdata.
 
 ## M6 – Test og første lansering
+
+Status: 0.6.0-rc.1 implementert og testet lokalt. Se LAUNCH_CHECKLIST.md for
+gjenstående godkjenning på fysiske enheter før bredere lansering.
 
 Leveranse: Gjennomarbeidet første versjon med appikon, enkel introduksjon,
 innstillinger, innholdskreditering og forklaring av lagring/personvern.

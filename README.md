@@ -163,3 +163,16 @@ redaksjonelt arbeid, ikke KI-generering under en kamp.
 
 Kjør `npm test` for alle tester. Produksjonskode kjører ingen schemaoppretting
 under forespørsler. Lokale testdata og verktøy er ikke del av Worker-artefaktet.
+
+## M6 – privat lanseringskandidat 0.6.0-rc.1
+
+Enkel introduksjon, innstillinger med 100–200 % tekst, redusert bevegelse og
+valgfri svarlyd (av som standard). Om-dialogen forklarer lokal lagring, nettdueller
+og innholdsgrunnlag. Spørsmålsmelding lager en redigerbar tekst uten spillernavn,
+romkode eller adgangsnøkkel; brukeren kopierer selv, og ingenting sendes automatisk.
+Alle skrifter bruker systemfonter. Offlinekopien validerer komplette ressurser og
+viser klarstatus først etter fullført installasjon. API og pakker caches ikke av SW.
+
+Kjør `npm test` og `npm run build`. Se [lanseringssjekklisten](LAUNCH_CHECKLIST.md)
+for plattformtester og gjenstående redaksjonelt arbeid. Distribusjon er PWA via
+HTTPS; ingen butikkinnsending eller offentlig tilgang inngår i denne kandidaten.

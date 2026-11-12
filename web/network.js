@@ -1,9 +1,9 @@
-import {categories,levelNames} from './questions.js?v=m5-2';
+import {categories,levelNames} from './questions.js?v=m6-2';
 const PREFIX='quizkrutt.online.';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const token=()=>Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');
 const date=value=>new Intl.DateTimeFormat('nb-NO',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}).format(value);
-export function createNetworkUi({show,onHome,setView}){
+export function createNetworkUi({show,onHome,setView,report}){
  let entry=null,room=null,error='',storageError='',busy=false,timer=null,generation=0,lastMarkup='',open=false;
  const stop=()=>{clearTimeout(timer);timer=null;};
  function save(){try{localStorage.setItem(PREFIX+entry.localId,JSON.stringify(entry));storageError='';return true;}catch{storageError='Kunne ikke huske spilleradgangen på denne enheten. Behold fanen åpen. Kontroller nettleserens lagringsplass.';return false;}}
@@ -44,7 +44,7 @@ export function createNetworkUi({show,onHome,setView}){
    else if(room.status==='waiting'){body=label+`<h1 class="category-title">Gi vennen<br>romkoden.</h1><div class="share-code" aria-label="Romkode ${room.code}">${room.code}</div><div class="actions"><button class="primary" id="copyRoom">Kopier romkode</button><button class="secondary" id="refreshRoom" ${busy?'disabled':''}>Oppdater status ↻</button></div><p id="copyStatus" role="status"></p><p>Vennen åpner Quizkrutt på sin telefon, velger «Nettduell med en venn» og skriver romkoden.</p><p class="local-note">Invitasjonen varer til ${date(room.inviteUntil)}. Du kan komme tilbake senere på denne enheten.</p>`;}
    else if(room.reviews.length>(entry.reviewed??0)){
     const review=room.reviews[entry.reviewed??0],right=review.answers[room.player]===review.correct;
-    body=label+`<div class="eyebrow">BEGGE HAR SVART · SPØRSMÅL ${review.index+1} AV ${room.count}</div><h1 class="category-title">${right?'Helt riktig!':'Et lite aha rikere.'}</h1><h2 class="question">${escape(review.question)}</h2><p><strong>Riktig svar: ${escape(review.options[review.correct])}</strong></p><p>${escape(review.explanation)}</p><div class="online-round-scores">${room.names.map((n,p)=>`<span><strong>${escape(n)}</strong>${review.answers[p]===review.correct?'+100 poeng':'0 poeng'}</span>`).join('')}</div><button class="primary" id="ackReview">${review.index===room.count-1?'Se resultatet':'Neste spørsmål'} →</button>`;
+    body=label+`<div class="eyebrow">BEGGE HAR SVART · SPØRSMÅL ${review.index+1} AV ${room.count}</div><h1 class="category-title">${right?'Helt riktig!':'Et lite aha rikere.'}</h1><h2 class="question">${escape(review.question)}</h2><p><strong>Riktig svar: ${escape(review.options[review.correct])}</strong></p><p>${escape(review.explanation)}</p><button class="text-button" id="onlineReport">Meld fra om spørsmålet</button><div class="online-round-scores">${room.names.map((n,p)=>`<span><strong>${escape(n)}</strong>${review.answers[p]===review.correct?'+100 poeng':'0 poeng'}</span>`).join('')}</div><button class="primary" id="ackReview">${review.index===room.count-1?'Se resultatet':'Neste spørsmål'} →</button>`;
    }else if(room.status==='finished'){
     const winner=room.scores[0]===room.scores[1]?null:room.scores[0]>room.scores[1]?0:1;
     body=label+`<div class="medal online-medal" aria-hidden="true">${winner===null?'✦':'★'}</div><h1 class="result-title">${winner===null?'Uavgjort!':`${escape(room.names[winner])} vinner!`}</h1><div class="duel-scorecards">${room.names.map((name,p)=>`<article class="duel-scorecard player-${p} ${winner===p?'duel-winner':''}"><div class="duel-avatar" aria-hidden="true">•ᴗ•</div><h2>${escape(name)}</h2><strong>${room.scores[p]} <small>poeng</small></strong><p>${room.scores[p]/100} av ${room.count} riktige</p></article>`).join('')}</div><p>Serveren har bekreftet begge resultatene.</p><button class="primary" id="newOnline">Ny nettduell →</button>`;
@@ -56,7 +56,7 @@ export function createNetworkUi({show,onHome,setView}){
   if(markup===lastMarkup)return;lastMarkup=markup;show(markup);
   document.querySelector('#onlineHub').onclick=hub;
   const bind=(id,action)=>{const el=document.getElementById(id);if(el)el.onclick=action;};
-  bind('retryPending',sendPending);bind('refreshRoom',()=>refresh());bind('retryAnswer',()=>sendAnswer(entry.answer.index,entry.answer.choice));bind('ackReview',()=>{entry.reviewed=(entry.reviewed??0)+1;save();render();});bind('newOnline',hub);
+  bind('onlineReport',()=>{const r=room.reviews[entry.reviewed??0];report?.({question:r.question,answer:r.options[r.correct],category:categories.find(c=>c.id===room.category).name,level:levelNames[room.level]});});bind('retryPending',sendPending);bind('refreshRoom',()=>refresh());bind('retryAnswer',()=>sendAnswer(entry.answer.index,entry.answer.choice));bind('ackReview',()=>{entry.reviewed=(entry.reviewed??0)+1;save();render();});bind('newOnline',hub);
   bind('copyRoom',async()=>{try{await navigator.clipboard.writeText(room.code);document.querySelector('#copyStatus').textContent='Romkoden er kopiert.';}catch{document.querySelector('#copyStatus').textContent='Kopiering var ikke tilgjengelig. Skriv av romkoden over.';}});
   bind('cancelOnline',()=>document.querySelector('#onlineCancelDialog').showModal());
   document.querySelectorAll('[data-online-answer]').forEach(b=>b.onclick=()=>sendAnswer(room.question.index,Number(b.dataset.onlineAnswer)));
