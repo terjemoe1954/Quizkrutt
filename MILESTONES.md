@@ -1,7 +1,7 @@
 # Quizkrutt – appidé og milepæler
 
 Dato: 12. november 2026
-Status: M1 og M2 implementert som separat PWA. Quizkrutt er en installérbar webapp for iPhone og Android. M3–M6 gjenstår.
+Status: M1–M3 implementert som separat PWA. Quizkrutt er en installérbar webapp for iPhone og Android. M4–M6 gjenstår.
 
 ## Navn
 
@@ -139,9 +139,9 @@ Annonser, betaling, offentlig toppliste og konto/synkronisering inngår ikke i f
 
 ## Neste konkrete steg
 
-1. Prøv M2 på fysisk iPhone og Android, inkludert installasjon og flymodus.
+1. Prøv M3 på fysisk iPhone og Android, inkludert nedlasting og flymodus.
 2. Samle tilbakemeldinger om ordlyd og vanskelighetsgrad.
-3. Fortsett med M3: bibliotek og nedlastbare quizpakker.
+3. Vurder M4: to spillere på samme telefon.
 
 ## M1 – gjennomført 12. november 2026
 
@@ -164,3 +164,18 @@ Annonser, betaling, offentlig toppliste og konto/synkronisering inngår ikke i f
 - 12 automatiske tester og nettleserflyt gjennom tre nivåer er kontrollert.
 - Oppstart og svar fra offlinekopi er prøvd med lokal server stoppet.
 - Se QUALITY_CHECKLIST.md for presist testomfang og gjenstående telefonkontroll.
+
+## M3 – implementert og kontrollert 12. november 2026
+
+- «Flere quizer» med tema-/nivåfilter og visning av bare nedlastede.
+- Seks pakker med 20 spørsmål hver: 120 ekstra spørsmål ved siden av de 540 medfølgende.
+- Navn, tema, nivå, versjon, nedlastingsstørrelse og lagringsstatus vises.
+- Nedlasting etter eget valg, avbryt, tidsavbrudd, nytt forsøk og bekreftet sletting.
+- Identitet, versjon, innholdsformat, antall, byteantall og SHA-256 kontrolleres før lagring.
+- Gamle pakker beholdes ved feil. Oppdateringer får egen versjonshistorikk.
+- M2-resultater bevares. Pakker har egne resultater, og alle pakkenivåer kan spilles direkte.
+- Bestått runde gir forslag til relevant høyere utfordring uten automatisk nedlasting.
+- Sletting beholder resultater og en aktiv rundes spørsmålsøyeblikksbilder.
+- Katalogen følger apputgivelser; JSON-innhold hentes fra samme private Site etter valg.
+- Ingen KI-generering, kontosynkronisering eller fjernredigeringssystem inngår.
+- Se QUALITY_CHECKLIST.md for faktisk verifikasjon og telefonkontroller som gjenstår.

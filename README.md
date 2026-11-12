@@ -1,4 +1,4 @@
-# Quizkrutt – M2
+# Quizkrutt – M3
 
 Separat, byggfri PWA for iPhone, Android og nettleser. Ingen npm-avhengigheter.
 Privat testversjon: https://quizkrutt.terjemoe54.chatgpt.site
@@ -35,10 +35,49 @@ fjerne fremdrift. M1 hadde ingen lagret fremdrift å migrere.
 
 ## Kontroller
 
-`node --test tests/game.test.mjs` kjører domenetester, også lagringsfeil og
+`node --test tests/*.test.mjs` kjører domenetester, også lagringsfeil og
 omstart. Se QUALITY_CHECKLIST.md for faktisk nettlesertest og begrensninger,
 CONTENT_REVIEW.md for redaksjonell gjennomgang og kildestikkprøver,
 og MILESTONES.md for neste arbeid.
 
-Nedlastbare pakker og duell kommer senere. Valgfrie Google Fonts faller tilbake
+Nedlastbare pakker er levert i M3. Duell kommer senere. Valgfrie Google Fonts faller tilbake
 til systemfonter uten nett; emoji varierer mellom plattformer.
+
+## M3 – nedlastbare quizpakker
+
+«Flere quizer» har seks pakker med 20 spørsmål hver: Norge: en liten byrunde,
+Norske naturperler, Filmkveld med favoritter, Bak filmklassikerne, På romferd
+og Universets hemmeligheter. Biblioteket kan filtreres på tema, nivå og bare
+nedlastede. Visningen er sortert på tema og nivå. Størrelse viser UTF-8-filens
+faktiske antall byte i kB. Pakker lastes bare ned etter valg fra spilleren.
+
+Alle pakkenivåer kan velges direkte. Grunnspillets 7/10-regel for opplåsing
+beholdes. Pakker har egne resultater og «bestått» ved 7/10; de gir ikke et av
+grunnspillets 18 merker. Etter bestått runde foreslås relevante pakker på et
+høyere nivå når det finnes, ellers en annen ekspertutfordring.
+
+Pakkene er statiske JSON-filer fra samme private Site. Ingen ny backend eller
+innholdsleverandør er nødvendig. For å legge til eller oppdatere innhold:
+
+1. Rediger `content/packs.mjs`. Øk pakkens heltall `version` ved endringer.
+2. Kjør `node scripts/build-packs.mjs`. Behold tidligere publiserte versjonsfiler.
+3. Kjør `node --test tests/*.test.mjs`.
+4. Gi appressursene en ny versjon i importene, index.html og sw.js, og publiser.
+
+Genereringen lager `dist/catalog.js` med metadata, byteantall og SHA-256 samt
+JSON-filene i `dist/packs/`. Ingen quizpakkefiler er i service workerens
+forhåndslasting. Pakken lagres først når hele filen er mottatt og identitet,
+versjon, antall, format og SHA-256 er kontrollert. SHA-256 sammenligner med den
+medfølgende katalogen; den er en integritetskontroll, ikke en digital signatur.
+
+Pakker lagres atomisk hver for seg i localStorage (`quizkrutt.pack.<id>`).
+Ufullstendig nedlasting eller lagringsfeil lar gammel versjon være urørt.
+«Avbryt nedlasting», tidsavbrudd og nytt forsøk støttes. En eldre appkatalog
+kan ikke nedgradere en nyere installert pakke. Oppdateringer blir tilgjengelige
+når appen oppdateres; biblioteket er ikke et separat fjernredigeringssystem.
+
+M2-fremdriften bevares i samme hovedpost og utvides med `packProgress`.
+Pakkeresultater og sett-historikk avgrenses med pakke-ID og versjon. En aktiv
+pakkerunde beholder egne spørsmålsøyeblikksbilder, slik at den kan fullføres selv
+etter sletting eller oppdatering av pakken. Sletting krever bekreftelse og
+fjerner innholdet, men ikke resultater. Nye runder krever ny nedlasting.

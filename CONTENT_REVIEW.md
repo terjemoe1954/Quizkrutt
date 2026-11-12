@@ -31,3 +31,20 @@ Kildestikkprøver (ikke en påstand om ekstern kontroll av alle 540 spørsmål):
 Vanskelighetsnivåene er redaksjonelle vurderinger, ikke kalibrert med en
 brukergruppe. Bredere språk-/innholdsredaksjon og tilbakemeldinger fra spillere
 inngår i videre lanseringsarbeid. Ingen påstander om medisinsk nytte.
+
+## M3 – 120 ekstra spørsmål
+
+Seks temaavgrensede pakker med egenformulerte spørsmål og korte forklaringer.
+Alle filer og metadata kontrolleres automatisk. Ordlyd og avgrensninger er
+gjennomgått. Elvespørsmålet om Vorma er avgrenset til samløpet med Glomma, og
+Begna-spørsmålet gjelder Bagn i Valdres. Kildestikkprøver:
+
+- Måneferden: https://www.nasa.gov/missions/apollo/apollo-11-mission-overview/
+- Columbia: https://www.nasa.gov/reference/the-space-shuttle/
+- Philae: https://www.esa.int/Education/Teach_with_Rosetta/Rosetta_timeline/
+- Fuglesang: https://www.rymdstyrelsen.se/upptack-rymden/astronauter/christer-fuglesang
+- Hornindalsvatnet: https://www.nve.no/vann-og-vassdrag/vassdragsforvaltning/verneplan-for-vassdrag/vestland/089-3-hornindalsvassdraget/
+
+Uavhengig kontroll av samtlige fakta og vanskelighetskalibrering med spillere
+inngår fortsatt i bredere lanseringsarbeid. Innholdet inneholder ikke sangtekster,
+bokutdrag eller filmbilder.

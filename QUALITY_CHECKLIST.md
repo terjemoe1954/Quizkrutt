@@ -33,3 +33,31 @@
 - Offlinepakker er medfølgende innhold; ekstra nedlastbare pakker hører til M3.
 
 Lokale testmerker er kun i testnettleseren på localhost og følger ikke publiseringen.
+
+## M3 – kontroll 12. november 2026
+
+- 26 automatiske tester består (de 12 M2-testene og 14 pakketester).
+- Seks pakker / 120 nye spørsmål, med byteantall og SHA-256 som samsvarer med filene.
+- Faktisk nedlasting starter bare etter valg; ufullstendige/feil pakker avvises.
+- Avbrudd, nettfeil, HTTP-feil, omdirigering til innlogging og lagringskvotefeil
+  beholder tidligere lagret innhold.
+- Oppdatering til versjon 2 beholder resultater og en aktiv runde fra versjon 1.
+  En gammel katalog kan ikke nedgradere en nyere installert pakke.
+- Sletting beholder resultater og en gjenopptakbar spørsmålsrunde.
+- Konkurrerende faner overskriver ikke en pakke endret under nedlasting.
+- M2-lagringen leses med uendret nøkkel; tidligere to testmerker besto i nettleseren.
+- Nettleser: lastet ned Norge-pakken, fullførte 10/10, så forslag til høyere nivå.
+- Nettleser: fjernet og lastet ned pakken igjen; 10/10-resultatet ble beholdt.
+- Nettleser: avbrøt en faktisk, langsom overføring av Universets hemmeligheter;
+  pakken forble ikke nedlastet. Nytt forsøk fullførte og viste klar for offlinebruk.
+- Nettleser: tema- og nivåfilter viser forventede pakker.
+- Biblioteket prøvd ved 320 og 390 px; ingen vannrett overløp ved 320 px.
+- Lokal server stoppet etter klargjort M3-offlinekopi. Appen startet fra cache,
+  åpnet lagret pakke, registrerte riktig svar og beholdt 100 poeng etter omlasting.
+- Lokale testmerker og pakkenedlastinger følger ikke publiseringen.
+
+Fortsatt gjenstående: fysisk iPhone-/Android-installasjon, langvarig flymodus,
+lagringsrydding på telefon, full skjermlesertest og uavhengig innholdsredaksjon.
+- Nettleser: forsøk på ny nedlasting med serveren stoppet viste tydelig feil og
+  «Prøv nedlasting igjen», mens nedlastede pakker fortsatt kunne spilles.
+- Biblioteket kontrollert ved 1200 px uten vannrett overløp; alle seks pakker vises.
