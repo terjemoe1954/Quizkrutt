@@ -1,7 +1,7 @@
 # Quizkrutt – appidé og milepæler
 
 Dato: 12. november 2026
-Status: M1 implementert som separat PWA-prototype. Arbeidsnavn Quizkrutt og webapp for iPhone/Android er valgt. M2–M6 gjenstår.
+Status: M1 og M2 implementert som separat PWA. Quizkrutt er en installérbar webapp for iPhone og Android. M3–M6 gjenstår.
 
 ## Navn
 
@@ -130,9 +130,8 @@ Ferdig når:
 
 ## Plattform og avgrensning
 
-Plattform er ikke valgt. Avklar om målet er en installérbar webapp for iPhone og
-Android, eller en egen iOS-app, før implementering. Quizkrutt skal ha eget prosjekt
-og egen lagring, separat fra HandyMe.
+Valgt plattform: installérbar webapp (PWA) for iPhone og Android. Quizkrutt har
+eget prosjekt og egen lokal lagring, separat fra HandyMe.
 
 Anbefalt første omfang: M1 og M2. Deretter M3 og lanseringskontrollene i M6.
 M4 kan legges til når solospillet fungerer godt; M5 kan vente til interessen er prøvd.
@@ -140,10 +139,9 @@ Annonser, betaling, offentlig toppliste og konto/synkronisering inngår ikke i f
 
 ## Neste konkrete steg
 
-1. Velg arbeidsnavn og målplattform.
-2. Opprett et eget prosjekt for quizappen.
-3. Lag M1 med leken forside og en komplett prøverunde.
-4. Prøv språk, vanskelighetsgrad og utseende før spørsmålsbanken utvides.
+1. Prøv M2 på fysisk iPhone og Android, inkludert installasjon og flymodus.
+2. Samle tilbakemeldinger om ordlyd og vanskelighetsgrad.
+3. Fortsett med M3: bibliotek og nedlastbare quizpakker.
 
 ## M1 – gjennomført 12. november 2026
 
@@ -152,3 +150,17 @@ Annonser, betaling, offentlig toppliste og konto/synkronisering inngår ikke i f
 - Appmanifest, appikoner, service worker og installasjonsveiledning.
 - Nettleserkontroll: full ti-spørsmålsrunde, kategori-/nivåvalg og avbryt/fortsett.
 - Mobilvisning kontrollert i nettleser; fysisk iPhone/Android-installasjon og offlineoppstart gjenstår.
+
+## M2 – implementert og kontrollert 12. november 2026
+
+- Seks kategorier med egne illustrerte SVG-ikoner.
+- Nybegynner, Viderekommen og Ekspert med 30 spørsmål hver: 540 totalt.
+- Ti tilfeldig valgte spørsmål per runde, med prioritet til ikke nylig spilte spørsmål.
+- 7/10 gir merke og åpner neste nivå; beste resultat og antall runder vises.
+- Lokal lagring etter hvert svar og steg, inkludert én påbegynt runde.
+- Forsiden viser merker og «Fortsett runden»; ny runde erstatter ikke en gammel uten valg.
+- Resultatsiden har «Prøv igjen», «Neste nivå» når åpent og «Velg kategori».
+- Lagringsfeil vises, og nyere fremdrift i en annen fane overskrives ikke.
+- 12 automatiske tester og nettleserflyt gjennom tre nivåer er kontrollert.
+- Oppstart og svar fra offlinekopi er prøvd med lokal server stoppet.
+- Se QUALITY_CHECKLIST.md for presist testomfang og gjenstående telefonkontroll.
