@@ -126,3 +126,62 @@ rapporteres separat etter publisering.
 
 Fysisk iPhone/Android, installasjon, ekte skjermleser, lyd på telefon og bredere
 redaksjonell gjennomgang gjenstår i LAUNCH_CHECKLIST.md.
+
+
+## Native iOS I2 – 12. november 2026
+
+- 13 Swift-tester bestått; 0.2.0 (2) bygget med Xcode 27.2 til iPhone 17 / iOS 27.2.
+- Seks pakker / 120 nye spørsmål med SHA-256-/byte-/skjemakontroll.
+- Full native pakkerunde: 400/1000, historikk beholdt etter fjerning/gjeninnlegging.
+- Native pakke på viderekommen: aktiv runde/svar/100 poeng beholdt etter appoppdatering.
+- I1-fremdrift uendret, separat pakkefil, feilfiler beskyttet mot overskriving.
+- Full native sofaduell: 100–0 med riktig vinner og ti kontrollerte overleveringer.
+- Spørsmål/fasit fraværende fra overleveringens tilgjengelighetstre.
+- Like navn avvist, omkamp, appbytte til Hjem og tilbake, samt avslutning prøvd.
+- Pakker installeres fra medfølgende appressurser; ingen nettforespørsel kreves.
+- Se ios/README.md for tester og grenser. Fysiske enheter og ekte VoiceOver gjenstår.
+
+## Native iOS I3 – 12. november 2026
+
+- 23 Swift-tester består, inkludert faktisk serverintegrasjon med to native klienter.
+- Korrekt signert Xcode-simulatorbygg 0.3.0 (3). Eksisterende sertifikat brukt lokalt.
+- To separate native iPhone-installasjoner mot lokal server: full kamp endte 100–100.
+- Samme rom/nøkkel overlevde appoppdatering og gjenopptak fra begge nøkkelringer.
+- Fasit var skjult mens bare én spiller hadde svart; begge fikk samme sluttresultat.
+- Ukjent svarrespons/omstart, gjentatt sending, avbrudd og gamle revisjoner er testet.
+- Cookie-avgrensning, avvist HTML-innlogging og tidsgrense med sen callback er testet.
+- Uinnlogget lesing mot privat produksjon ble avvist. Ingen innloggingshemmeligheter
+  eller Sites-servicecredential ble lagt i appen. Tilgangspolicyen er uendret.
+- Privat innloggingsvisning er implementert; vellykket privat kontoflyt og faktisk
+  kamp på to fysiske telefoner er ikke sluttgodkjent. Se ios/I3_TESTING.md.
+
+
+## Native iOS 0.4.0 – I4
+
+- [x] Signert installasjon og enkel navigasjon på fysisk iPhone 15 Pro og iPad 10.
+- [x] Stor tekst, iPad-lesebredde og simulatorens VoiceOver-fokus/aktivering testet.
+- [x] Rettinger for svarkontrast, neste spørsmåls rulleposisjon og duelloppstart.
+- [x] 24 Swift-tester bestått, 2 valgfrie integrasjonstester hoppet over.
+- [x] Debug og Release bygger; eksisterende data bevart under oppdatering.
+- [ ] Fysisk VoiceOver-lytting og full fysisk spillrunde.
+- [ ] Privat innlogging/nettduell på to fysiske telefoner (utsatt av brukeren).
+- [ ] iOS 17, iPad multitasking og TestFlight/I5 før lansering.
+
+Detaljert bevis og begrensninger: `ios/I4_TESTING.md`.
+
+
+## Native iOS I5 – 0.5.0 (5)
+
+- [x] Etter avtale: første beta er offline, nettduell kommer senere.
+- [x] Hjelp/personvern og godkjent supportkontakt i appen.
+- [x] Release-arkiv med eksisterende utviklersignering, dSYM og lokal arkivkontroll.
+- [x] 24 Swift-tester bestått, 2 valgfrie integrasjonstester hoppet over.
+- [x] Ikon 1024 × 1024 uten alfa; 660 spørsmål og pakkekontroll verifisert i arkivet.
+- [x] Norske butikk-/betatekster, review notes og publiseringsutkast for support/personvern.
+- [x] Offentlige URL-er, personvernlenke, appoppføring og Apple-validering.
+- [x] Distribusjonssignering og TestFlight-opplasting av 0.5.0 (6).
+- [ ] Apple-prosessering, intern testtilgang og installasjon gjennom TestFlight.
+- [ ] I4s fysiske sluttkontroller, redaksjon og komplett butikkbildesett.
+
+Se `ios/Distribution/TESTFLIGHT.md`. Bygg 6 er Apple-validert og lastet opp
+for intern testing. App Store Connect viser «Processing». Ingen App Store-innsending.

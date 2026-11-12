@@ -210,3 +210,124 @@ Annonser, betaling, offentlig toppliste og konto/synkronisering inngår ikke i f
 - Ingen chat, offentlig romliste, ekstra varsling eller endring av solofremdrift.
 - 45 automatiske tester; to nettleserøkter har fullført samme kamp og prøvd nettbrudd.
 - Se QUALITY_CHECKLIST.md for verifikasjonsomfang og gjenstående fysisk telefontest.
+
+## Ny retning – native iOS (12. november 2026)
+
+Egen SwiftUI-app i `ios/Quizkrutt.xcodeproj`. Første lokale iOS-milepæl I1 er bygget
+og prøvd i iPhone 17-simulatoren: 540 spørsmål, tre nivåer, merker, offline solo,
+automatisk lagring, gjenopptak og native innstillinger. Fire Swift-tester består.
+Se `ios/README.md` for I2–I5. PWA-M1–M6 er ikke automatisk portert i sin helhet;
+I2-pakker og sofaduell og I3s native nettduell er nå implementert (se under).
+Privat kontoflyt venter på akseptanse. I4 bruker eksisterende lokal
+utviklersignering på fysisk iPhone/iPad. Ingen butikkinnsending er gjort.
+
+
+## I2 – Native quizpakker og sofaduell
+
+Status: implementert 12. november 2026 i iOS 0.2.0 (bygg 2).
+
+- [x] Seks medfølgende pakker / 120 spørsmål, eget bibliotek med tema-/nivåfilter.
+- [x] Eksplisitt «Legg til», integritetskontroll og atomisk, separat pakkelagring.
+- [x] Pakkerunder med historikk og gjenopptak; fjerning bevarer resultat og aktiv runde.
+- [x] Sofaduell med to navn, kategori/nivå og 5/10 spørsmål hver.
+- [x] Balanserte, ikke-overlappende spørsmål, overlevering og skjuling ved appbytte.
+- [x] Resultat, omkamp og bekreftet avslutning uten å endre solo-/pakkefremdrift.
+- [x] 13 Swift-tester, Xcode-bygg, full pakkerunde og full duell i iPhone-simulator.
+
+Pakkene i I2 installeres fra appens medfølgende ressurser. Nettbasert henting av
+nye pakker krever en senere katalog-/adgangsløsning; nye medfølgende pakker kan
+leveres med appoppdateringer. Ingen Sites-tilgang eller serverendringer trengtes.
+Fysisk enhets-/tilgjengelighetstesting og TestFlight gjenstår i I4/I5.
+
+
+## I3 – Native nettduell
+
+Status: 0.3.0 (bygg 3) implementert og testet mot lokal server med to separate
+native iPhone-installasjoner. Privat innlogging/to kontoer venter på sluttkontroll.
+
+- [x] Native oppretting, innmelding, romkode, venting, svar, fasit og resultater.
+- [x] Eksisterende server-API, fem felles spørsmål og serverberegnede poeng.
+- [x] Egne 256-bits romnøkler, separat Keychain-lagring og gjenopptak.
+- [x] Gjentatt sending ved ukjent svar, revisjonskontroll og bekreftet avbrudd.
+- [x] Polling ved synlig app, manuell oppdatering og tidsgrenser.
+- [x] Privat innloggingsvisning; ingen servicecredential eller nøkler i appressurser.
+- [x] 23 Swift-tester, Debug/Release-bygg og full native kamp i to simulatorer: 100–100.
+- [ ] Sluttgodkjent innlogging og kamp mot privat server med hver sin testkonto.
+
+Se `ios/I3_TESTING.md`. Ingen endring av Sites-publikum, database eller serverkode.
+Fysisk enhetstest er omtalt i I4 nedenfor; TestFlight gjenstår i I5.
+
+Privat innlogging ble åpnet frem til ChatGPTs passordsteg. Brukeren valgte å
+fullføre innloggingen senere; dette akseptansepunktet er derfor fortsatt åpent.
+
+
+## I4 – iPhone, iPad, stor tekst og VoiceOver
+
+Status: 0.4.0 (4) implementert og delvis verifisert 12. november 2026.
+
+- [x] Fysisk signert installasjon og navigasjon på iPhone 15 Pro og iPad 10.
+- [x] Største tekst, stablede svar, lesebredde på iPad og orienteringer.
+- [x] Skjermleseretiketter uten forhåndsavsløring, eksplisitt fasit og fokusflytting.
+- [x] VoiceOver aktiv i simulator: spørsmål, berøringsvalg/dobbelttrykk og overlevering.
+- [x] Rettet grå besvarte alternativer, rulleposisjon og tom førstegangs-sofaduell.
+- [x] 24 tester bestått, 2 valgfrie integrasjonstester hoppet over; Debug/Release bygger.
+- [ ] Fysisk VoiceOver-lyttetest og full fysisk spillrunde/sluttkontroll.
+
+Se `ios/I4_TESTING.md` for enheter, funn, skjermbilder og gjenværende punkter.
+Privat innlogging tas senere som avtalt. I4 er ikke full lanseringsgodkjenning.
+
+
+## I5 – TestFlight og App Store-klargjøring
+
+Status: lokal klargjøring ferdig i 0.5.0 (5); Apple-distribusjon gjenstår.
+Brukeren godkjente første beta uten aktiv nettduell og terjemoe54@hotmail.com
+som offentlig support-/personvernkontakt. Privat innlogging er utsatt.
+
+- [x] Release-beta med solo, pakker og sofaduell; nettduell er «kommer senere».
+- [x] Hjelp/personvern i appen og versjonsnummer fra byggets metadata.
+- [x] Offline-personvernmanifest, eksportfelt, ikon og komplett enhetsarkiv.
+- [x] Lokalt Apple Development-signert Release-arkiv med dSYM og arkivkontroll.
+- [x] Norske butikk-/TestFlight-tekster, review notes, support-/personvernutkast.
+- [ ] Offentlige support-/personvern-URL-er og lenke i appen.
+- [ ] App Store Connect, distribusjonssignering/validering og TestFlight-opplasting.
+- [ ] Fysisk slutt-QA, ferdige butikkbilder og eierens App Store-opplysninger.
+
+Se `ios/Distribution/TESTFLIGHT.md`. Ingen Apple-opplasting, invitasjon eller
+offentlig publisering er gjort gjennom I5-klargjøringen.
+
+
+### I5-oppfølging – offentlige URL-er / bygg 6
+
+- [x] Eget offentlig support-/personvernnettsted publisert og kontrollert uten innlogging.
+- [x] Offentlige lenker i iOS-appen, byggnummer økt til 6; Debug kompilerer.
+- [ ] Release-arkiv 6: venter på brukerens nøkkelringgodkjenning for signering.
+- [ ] App Store Connect-innlogging/oppføring og Apple-validering.
+- [ ] Siste fysisk QA og TestFlight-opplasting. Opplasting er autorisert når klart.
+
+Support: https://quizkrutt-support.terjemoe54.chatgpt.site/support/
+Personvern: https://quizkrutt-support.terjemoe54.chatgpt.site/personvern/
+Privat quizinnlogging forblir utsatt. Se `ios/Distribution/TESTFLIGHT.md`.
+
+
+### I5-oppfølging – Apple-validert bygg 6
+
+- [x] Bygg 6 ferdig signert og lokalt arkivkontrollert.
+- [x] App-ID og Quizkrutt-oppføring opprettet i Apple (6833974275), norsk hovedspråk.
+- [x] Offentlig personvernlenke åpnet fra fysisk iPhone, lagret gjenopptak testet.
+- [x] Full pakkerunde på fysisk iPad: 900/1000; historikk bevart etter omstart.
+- [x] Fysisk sofaduell: oppstart, spørsmål, fasit og skjult overlevering.
+- [x] Offentlig quizkrutt-mappe i GitHub app-page, med tre publiserte sider.
+- [x] Apple-validering bestått etter brukerens godkjenning av distribusjonssignering.
+- [x] Betaopplysninger og reviewkontakt lagret hos Apple.
+- [x] Opplasting bekreftet i App Store Connect: 0.5.0 (6), «Processing».
+- [ ] Ferdig Apple-prosessering og tilknytning til intern testgruppe.
+
+Ingen offentlig App Store-innsending. Privat innlogging er fortsatt utsatt.
+
+
+### TestFlight-kontroll 12. november 2026
+
+Apple viser bygg 0.5.0 (6) som «Complete» og «Ready to Test».
+Bygget er lagt til den eksisterende interne gruppen «Internal»; gruppen er
+markert valgt på bygget. Ingen nye testere er invitert i denne kontrollen.
+Dokumentasjon: `ios/Distribution/preview-testflight-build6-ready.png` (fra prosjektroten).
