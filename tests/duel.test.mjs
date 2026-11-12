@@ -1,8 +1,8 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {categories} from '../dist/questions.js';
-import {createDuel,validateNames,currentPlayer,currentIndex,duelQuestion,duelScores,openDuelTurn,answerDuel,advanceDuel,hideDuel,duelWinner} from '../dist/duel.js';
-import {emptyState,startRound,answerRound,validateState} from '../dist/game.js';
+import {categories} from '../web/questions.js';
+import {createDuel,validateNames,currentPlayer,currentIndex,duelQuestion,duelScores,openDuelTurn,answerDuel,advanceDuel,hideDuel,duelWinner} from '../web/duel.js';
+import {emptyState,startRound,answerRound,validateState} from '../web/game.js';
 const options={names:['Ada','Leo'],category:'world',level:0,count:5};
 const group=id=>id.replace(/-\d+$/,'');
 function tally(cards){return cards.reduce((result,c)=>(result[group(c.id)]=(result[group(c.id)]??0)+1,result),{});}

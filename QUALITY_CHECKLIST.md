@@ -83,3 +83,27 @@ lagringsrydding på telefon, full skjermlesertest og uavhengig innholdsredaksjon
 - Fysisk iPhone/Android og reelt appbytte/låseskjerm gjenstår. Appbytte er dekket
   av motortest; den faktiske visibilitychange-flyten er ikke manuelt prøvd på telefon.
 - Dueller og kallenavn lagres ikke ved lukking/omlasting. Ingen nettduell i M4.
+
+## M5 – kontroll 12. november 2026
+
+- 45 automatiske tester består, inkludert migrert M1–M4-regresjon, SQLite/D1-SQL,
+  API-kontrakt, nøkkeladgang, radversjon og bygget Worker med innbakte webressurser.
+- Oppretting/join kan gjentas med samme nøkkel uten nye rom eller dobbelt opptak.
+- Begge får samme spørsmål og rekkefølge. Fasit og poeng holdes tilbake før begge svar.
+- Samtidige svar, gjentatt sending, motstridende valg og fremtidig tur er kontrollert.
+- Uautoriserte nøkler og nøkler fra andre rom kan ikke lese, svare eller avbryte.
+- Invitasjonsutløp, sju dagers kamputløp, fullt rom, ugyldige navn og rategrense prøvd.
+- Avbrutt kamp avvises for senere svar og vises som avsluttet hos begge.
+- Bygget Worker avviser kildekode-/serverfiladresser. API-responser er no-store.
+- To lokale nettleserøkter opprettet/joinet samme kamp og fullførte med 500–0.
+- Verten lastet siden på nytt og fortsatte med serverbekreftet svar, uten tidlig fasit.
+- Serveren ble stoppet mens et svar ble sendt. «Ikke bekreftet» ble vist med valgt
+  svar bevart. Etter omstart bekreftet «Send samme svar igjen» ett lagret svar.
+- Gjest avbrøt en annen kamp; vert fikk samme sluttstatus etter oppdatering.
+- Mobilbredde 320 px: hub og lagret resultat uten vannrett overløp. Resultat også sett ved 390 px.
+- Eksisterende to solomerker, to pakker og påbegynt solopakkerunde besto etter oppdateringen.
+
+Gjenstår: to fysiske telefoner, Sites-innlogging på begge, langvarig frakobling,
+full skjermlesertest og bredere redaksjonell kontroll. Lokal API-test bruker ekte
+SQLite med D1-grensesnitt, ikke Cloudflare-infrastruktur. Produksjonskontroll
+rapporteres separat etter publisering.

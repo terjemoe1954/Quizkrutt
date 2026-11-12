@@ -48,3 +48,15 @@ Begna-spørsmålet gjelder Bagn i Valdres. Kildestikkprøver:
 Uavhengig kontroll av samtlige fakta og vanskelighetskalibrering med spillere
 inngår fortsatt i bredere lanseringsarbeid. Innholdet inneholder ikke sangtekster,
 bokutdrag eller filmbilder.
+
+## M5 – separat nettbank
+
+90 serverlagrede spørsmål, fem per kategori/nivå. Disse følger ikke med
+nettleserressursene. Spørsmålsstruktur, entydige alternativer og fordeling er
+kontrollert automatisk. Komponistspørsmålene viser til fødestedets nåværende land,
+ikke historisk statsborgerskap. Bartóks fødested er derfor oppgitt som Romania:
+https://www.loc.gov/item/2021670578/
+
+Forklaringer og variasjon i nettbanken kan videreutvikles. En ny duell på samme
+kategori/nivå bruker samme lille bank i ny rekkefølge; større bank og uavhengig
+redaksjonell gjennomgang inngår i videre arbeid.

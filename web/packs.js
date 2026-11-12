@@ -1,4 +1,4 @@
-import {validatePack} from './pack-format.js?v=m4-1';
+import {validatePack} from './pack-format.js?v=m5-2';
 export const PACK_PREFIX='quizkrutt.pack.';
 export const packKey=(id,version)=>`${id}@${version}`;
 export function recommendPacks(catalog,category,level){

@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {bank,categories} from '../dist/questions.js';
-import {emptyState,unlocked,startRound,answerRound,advanceRound,questionFor,scoreRound,summary,validateState,createStore,STORAGE_KEY} from '../dist/game.js';
+import {bank,categories} from '../web/questions.js';
+import {emptyState,unlocked,startRound,answerRound,advanceRound,questionFor,scoreRound,summary,validateState,createStore,STORAGE_KEY} from '../web/game.js';
 function storage(initial=null){let value=initial;return {getItem:()=>value,setItem:(_,s)=>{value=s;},get raw(){return value;}};}
 function complete(state,category,level,correct=10){
  state=startRound(state,category,level);

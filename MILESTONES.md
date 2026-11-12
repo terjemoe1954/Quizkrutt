@@ -1,7 +1,7 @@
 # Quizkrutt – appidé og milepæler
 
 Dato: 12. november 2026
-Status: M1–M4 implementert som separat PWA. Quizkrutt er en installérbar webapp for iPhone og Android. M5 og lanseringskontrollene i M6 gjenstår.
+Status: M1–M5 implementert som separat PWA. Quizkrutt er en installérbar webapp for iPhone og Android. Lanseringskontrollene i M6 gjenstår.
 
 ## Navn
 
@@ -139,9 +139,9 @@ Annonser, betaling, offentlig toppliste og konto/synkronisering inngår ikke i f
 
 ## Neste konkrete steg
 
-1. Prøv M4-duell på fysisk iPhone og Android, inkludert overlevering og flymodus.
+1. Prøv M5 med to fysiske telefoner, inkludert innlogging, nettbrudd og retur til duellen.
 2. Samle tilbakemeldinger om ordlyd og vanskelighetsgrad.
-3. Fullfør M6-kontroller og vurder senere M5: nettduell med en venn.
+3. Fullfør M6-kontroller før bredere lansering.
 
 ## M1 – gjennomført 12. november 2026
 
@@ -192,3 +192,18 @@ Annonser, betaling, offentlig toppliste og konto/synkronisering inngår ikke i f
 - Duellen er lokal og lagres ikke ved lukking eller omlasting.
 - 34 automatiske tester består, inkludert alle kategori-/nivåvalg og begge lengder.
 - Se QUALITY_CHECKLIST.md for nettlesertester og gjenstående fysisk telefontest.
+
+## M5 – nettduell implementert 12. november 2026
+
+- Sites Worker og D1, samme private nettadresse og uendret tilgang.
+- Opprett rom, åttetegns romkode og gjesteplass på telefon nummer to.
+- Fem identiske spørsmål og svaralternativer, turbasert, med serverstyrt poeng.
+- Separat bank med 90 spørsmål der fasit ikke inngår i nettleserressursene.
+- Fasit/forklaring først når begge har svart; ingen mulighet til å hoppe over turer.
+- Tilfeldige spilleradganger, nøkkelhash på serveren, kontroll per handling.
+- Gjenopptakelse, ubekreftet svar, nytt forsøk og vern mot doble poeng.
+- Radversjon hindrer samtidige svar i å overskrive hverandre.
+- Invitasjonsutløp etter 24 timer, kamp etter sju dager og avbrutt kamp hos begge.
+- Ingen chat, offentlig romliste, ekstra varsling eller endring av solofremdrift.
+- 45 automatiske tester; to nettleserøkter har fullført samme kamp og prøvd nettbrudd.
+- Se QUALITY_CHECKLIST.md for verifikasjonsomfang og gjenstående fysisk telefontest.

@@ -1,13 +1,20 @@
-# Quizkrutt – M4
+# Quizkrutt – M5
 
-Separat, byggfri PWA for iPhone, Android og nettleser. Ingen npm-avhengigheter.
+Separat PWA for iPhone, Android og nettleser. M5 bruker en Sites Worker og D1 til nettdueller.
 Privat testversjon: https://quizkrutt.terjemoe54.chatgpt.site
 
 ## Kjør lokalt
 
-Kjør `python3 -m http.server 4174 --directory dist` fra denne mappen og åpne
-http://localhost:4174. Service worker krever localhost eller HTTPS.
-Publisering bruker hele dist-mappen og .openai/hosting.json.
+Kjør `npm ci`, `npm run build` og `npm run dev` fra denne mappen.
+Åpne http://127.0.0.1:4174. Node.js 22.13+ kreves; lokal forhåndsvisning bruker
+Node sin SQLite-modul til å etterligne D1-grensesnittet. Den lokale databasen
+ligger i ignorert `.local/`, og er separat fra produksjon.
+
+Nettleserkoden ligger i `web/`, serverkode i `worker/`, og databasedefinisjonen
+i `db/schema.ts`. `npm run db:generate` lager schema-only Drizzle-migrasjoner.
+`npm run build` lager én Worker-ESM med innbakte webressurser under `dist/server/`.
+Kildemanifestet beholder samme Sites-ID og private tilgang, og deklarerer D1-binding `DB`.
+Sites bruker de medfølgende migrasjonene ved publisering. Endre ikke anvendte migrasjoner.
 
 ## Innhold og spill
 
@@ -40,7 +47,7 @@ omstart. Se QUALITY_CHECKLIST.md for faktisk nettlesertest og begrensninger,
 CONTENT_REVIEW.md for redaksjonell gjennomgang og kildestikkprøver,
 og MILESTONES.md for neste arbeid.
 
-Nedlastbare pakker er levert i M3. Duell på samme telefon er levert i M4. Nettduell kommer eventuelt senere. Valgfrie Google Fonts faller tilbake
+Nedlastbare pakker er levert i M3. Duell på samme telefon er levert i M4. Nettduell er levert i M5. Valgfrie Google Fonts faller tilbake
 til systemfonter uten nett; emoji varierer mellom plattformer.
 
 ## M3 – nedlastbare quizpakker
@@ -64,8 +71,8 @@ innholdsleverandør er nødvendig. For å legge til eller oppdatere innhold:
 3. Kjør `node --test tests/*.test.mjs`.
 4. Gi appressursene en ny versjon i importene, index.html og sw.js, og publiser.
 
-Genereringen lager `dist/catalog.js` med metadata, byteantall og SHA-256 samt
-JSON-filene i `dist/packs/`. Ingen quizpakkefiler er i service workerens
+Genereringen lager `web/catalog.js` med metadata, byteantall og SHA-256 samt
+JSON-filene i `web/packs/`. Ingen quizpakkefiler er i service workerens
 forhåndslasting. Pakken lagres først når hele filen er mottatt og identitet,
 versjon, antall, format og SHA-256 er kontrollert. SHA-256 sammenligner med den
 medfølgende katalogen; den er en integritetskontroll, ikke en digital signatur.
@@ -108,3 +115,51 @@ Duellen holdes kun i minnet. Lukking eller omlasting avslutter den. Kallenavn
 og kampresultater lagres ikke eller sendes til en server. «Avslutt duellen» og
 hjemlenken krever bekreftelse under kamp. Verken fullført eller avbrutt duell
 endrer soloresultater, merker, sett-historikk, pakkehistorikk eller påbegynt solorunde.
+
+## M5 – nettduell på hver deres telefon
+
+Opprett en duell, del romkoden med vennen, og velg «Bli med» på telefon nummer to.
+Den private testadressen krever at begge telefoner har tilgang gjennom Sites.
+Ingen delingsinnstillinger er endret. Hver spiller har en lokal, tilfeldig
+256-bits spillernøkkel. Den er en romavgrenset adgangsnøkkel, ikke en erstatning
+for Sites sin innlogging. Den sendes aldri i URL-en eller via romkoden.
+
+- Fem felles spørsmål fra en separat serverbank med 90 spørsmål (5 per kategori/nivå).
+- Begge får samme alternativer i samme rekkefølge. Ingen tidsbonus.
+- Spillerne kan svare på ulike tidspunkter. Neste spørsmål åpner etter begge svar.
+- Fasit, forklaring, svar og poeng for en tur gis først når begge har svart.
+- Serveren beregner poeng fra lagrede svar. Klientens eventuelle poeng ignoreres.
+- Venting poller hvert tiende sekund mens fanen er synlig; manuell oppdatering finnes.
+- Skjult fane stopper polling. Retur og gjenopprettet nett henter oppdatert status.
+- Invitasjon: 24 timer. Duell: sju dager fra opprettelse. Utløpte rom avvises.
+- Begge kan avbryte en ufullført kamp med bekreftelse. Ingen vinner ved avbrudd.
+- Solofremdrift, pakker og sofaduell er separate og fungerer fortsatt uten nett.
+
+Oppretting og joining tåler tapt respons med samme lokalt lagrede spillernøkkel.
+Et svar med samme tur og samme valg kan sendes på nytt. Et annet valg for en
+allerede besvart tur eller en fremtidig tur avvises. Optimistisk radversjon og
+sammenlign-og-oppdater hindrer tap av samtidige svar i D1. API-responser er no-store,
+og service worker håndterer ikke API-forespørsler.
+
+Kun nøkkelhash lagres på serveren. Romkode alene gir bare anledning til å fylle
+ledig gjesteplass, ikke lese/spille et allerede fullt rom. Ingen offentlig
+romliste finnes. Serveren kontrollerer adgang for hver lesing, svar og avbryt.
+Forsøk på oppretting/join begrenses per minutt per hash av plattformens besøkeradresse
+(eller besøker-ID når adresse ikke finnes). Rå adresser lagres ikke i grensetabellen.
+Kallenavn og svar er romdata. Rom utløper etter sju dager; inntil 100 utløpte rom
+og 100 utløpte begrensningsposter ryddes ved ny oppretting. Uten nye opprettinger
+kan utløpte data bli liggende til senere opprydding. Ingen ekstern varsling/chat.
+
+`quizkrutt.online.<lokal-ID>` lagrer spilleradgang og eventuelt ubekreftet svar
+lokalt. «Nettdueller» viser tidligere økter på denne enheten. Bruk samme nettleser
+for å fortsette etter omstart. Sletting av nettsteddata kan miste adgangsnøkkelen;
+romkode gjenoppretter ikke en opptatt spillerplass. Ingen kontobasert nøkkelgjenoppretting.
+Romkoden og spillernøklene skal bare deles med den tiltenkte spilleren/enheten.
+
+Serverbanken ligger i `worker/network-bank.mjs` og serveres ikke som nettleserfil.
+Den første nettbanken har kun fem spørsmål per kategori/nivå; gjentatte kamper
+på samme nivå bruker samme bank i tilfeldig rekkefølge. Utvidelse er vanlig
+redaksjonelt arbeid, ikke KI-generering under en kamp.
+
+Kjør `npm test` for alle tester. Produksjonskode kjører ingen schemaoppretting
+under forespørsler. Lokale testdata og verktøy er ikke del av Worker-artefaktet.

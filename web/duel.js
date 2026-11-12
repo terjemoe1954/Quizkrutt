@@ -1,5 +1,5 @@
-import {bank,categories} from './questions.js?v=m4-1';
-import {shuffle,questionFor} from './game.js?v=m4-1';
+import {bank,categories} from './questions.js?v=m5-2';
+import {shuffle,questionFor} from './game.js?v=m5-2';
 const copy=value=>JSON.parse(JSON.stringify(value));
 export function validateNames(values){
  if(!Array.isArray(values)||values.length!==2||values.some(n=>typeof n!=='string'))throw Error('Skriv et kallenavn til hver spiller.');

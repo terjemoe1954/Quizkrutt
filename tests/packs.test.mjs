@@ -2,23 +2,23 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {createHash,webcrypto} from 'node:crypto';
-import {catalog} from '../dist/catalog.js';
+import {catalog} from '../web/catalog.js';
 import {packs} from '../content/packs.mjs';
-import {validatePack} from '../dist/pack-format.js';
-import {createPackLibrary,PACK_PREFIX,packKey,recommendPacks} from '../dist/packs.js';
-import {emptyState,startPackRound,answerRound,advanceRound,questionFor,scoreRound,validateState,unlocked,createStore,STORAGE_KEY} from '../dist/game.js';
+import {validatePack} from '../web/pack-format.js';
+import {createPackLibrary,PACK_PREFIX,packKey,recommendPacks} from '../web/packs.js';
+import {emptyState,startPackRound,answerRound,advanceRound,questionFor,scoreRound,validateState,unlocked,createStore,STORAGE_KEY} from '../web/game.js';
 const clone=x=>JSON.parse(JSON.stringify(x));
 const disk=()=>{const values=new Map();return {getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)};};
 const itemFor=p=>{const bytes=new TextEncoder().encode(JSON.stringify(p));return {...p,count:p.questions.length,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex'),file:`packs/${p.id}.v${p.version}.json`};};
-const library=(storage,cat=catalog,fetcher=async path=>new Response(await readFile(new URL('../dist/'+path.slice(2),import.meta.url))))=>createPackLibrary(storage,cat,{fetcher,cryptoApi:webcrypto});
+const library=(storage,cat=catalog,fetcher=async path=>new Response(await readFile(new URL('../web/'+path.slice(2),import.meta.url))))=>createPackLibrary(storage,cat,{fetcher,cryptoApi:webcrypto});
 function finish(state){for(let i=state.active.index;i<10;i++){state=answerRound(state,state.active.cards[i].correct);state=advanceRound(state);}return state;}
 test('seks faktiske nedlastinger, 120 nye spørsmål og metadata som samsvarer med filer',async()=>{
  assert.equal(packs.length,6);const ids=[],questions=[];
- for(const p of catalog){const bytes=await readFile(new URL('../dist/'+p.file,import.meta.url));assert.equal(bytes.length,p.bytes);assert.equal(createHash('sha256').update(bytes).digest('hex'),p.sha256);const pack=validatePack(JSON.parse(bytes),p);assert.equal(pack.questions.length,20);ids.push(...pack.questions.map(q=>q.id));questions.push(...pack.questions.map(q=>q.question));}
+ for(const p of catalog){const bytes=await readFile(new URL('../web/'+p.file,import.meta.url));assert.equal(bytes.length,p.bytes);assert.equal(createHash('sha256').update(bytes).digest('hex'),p.sha256);const pack=validatePack(JSON.parse(bytes),p);assert.equal(pack.questions.length,20);ids.push(...pack.questions.map(q=>q.id));questions.push(...pack.questions.map(q=>q.question));}
  assert.equal(ids.length,120);assert.equal(new Set(ids).size,120);assert.equal(new Set(questions).size,120);
 });
 test('nedlasting er eksplisitt og vises først etter at hele pakken er kontrollert og lagret',async()=>{
- const storage=disk();let calls=0;const db=library(storage,catalog,async path=>{calls++;return new Response(await readFile(new URL('../dist/'+path.slice(2),import.meta.url)));});
+ const storage=disk();let calls=0;const db=library(storage,catalog,async path=>{calls++;return new Response(await readFile(new URL('../web/'+path.slice(2),import.meta.url)));});
  assert.equal(db.read(catalog[0].id).pack,null);assert.equal(calls,0);await db.download(catalog[0].id);assert.equal(calls,1);assert.equal(db.read(catalog[0].id).pack.questions.length,20);
  const offline=library(storage,catalog,async()=>{throw new TypeError('offline');});assert.equal(offline.read(catalog[0].id).pack.id,catalog[0].id);
 });
@@ -62,6 +62,6 @@ test('gammel katalog kan ikke nedgradere en nyere installert pakke',async()=>{
  const storage=disk(),p=clone(packs[0]);p.version=2;const item=itemFor(p);await library(storage,[item],async()=>new Response(JSON.stringify(p))).download(p.id);await assert.rejects(()=>library(storage).download(p.id),/nyere pakkeversjon/);assert.equal(library(storage).read(p.id).pack.version,2);
 });
 test('konkurrerende faner overskriver ikke pakker som er endret mens nedlasting pågår',async()=>{
- const storage=disk(),p=packs[0],db=library(storage,catalog,async path=>{storage.setItem(PACK_PREFIX+p.id,'newer-value');return new Response(await readFile(new URL('../dist/'+path.slice(2),import.meta.url)));});await assert.rejects(()=>db.download(p.id),/annen fane/);assert.equal(storage.getItem(PACK_PREFIX+p.id),'newer-value');
+ const storage=disk(),p=packs[0],db=library(storage,catalog,async path=>{storage.setItem(PACK_PREFIX+p.id,'newer-value');return new Response(await readFile(new URL('../web/'+path.slice(2),import.meta.url)));});await assert.rejects(()=>db.download(p.id),/annen fane/);assert.equal(storage.getItem(PACK_PREFIX+p.id),'newer-value');
 });
 test('forslag etter bestått nivå prioriterer relevant tema og høyere nivå',()=>{const recs=recommendPacks(catalog,'science',0);assert.equal(recs[0].category,'science');assert.equal(recs[0].level,1);assert.ok(recs.every(p=>p.level>0));});
