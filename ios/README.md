@@ -1,4 +1,10 @@
-# Quizkrutt for iOS – 0.5.0 (I5-klargjøring)
+# Quizkrutt for iOS - 0.7.0 (8)
+
+Nåværende beta har nettduell med kallenavn og romkode uten ChatGPT-konto.
+Den separate serveren er offentlig; romadgang krever individuelle spillernøkler.
+Se [nettduelloppdateringen](Distribution/ONLINE_BETA.md) og
+[bibliotek/nullstilling](Distribution/LIBRARY_UPDATE.md). Eldre milepælnotater
+nedenfor beskriver også historiske tester og tidligere betaer.
 
 Eget Xcode-prosjekt med native SwiftUI. Krever iOS 17 eller nyere. Ingen eksterne
 Swift-pakker. Spørsmål følger med appen og solospill trenger aldri nett.
@@ -28,14 +34,14 @@ i prosjektet og ingen nye sertifikater er opprettet.
 - Uleselig fremdrift bevares og overskrives ikke. Lagringsfeil vises med nytt forsøk.
 - Introduksjon, innstillinger, valgfri haptikk (av som standard), systemets Dynamic
   Type, semantiske skjermleseretiketter og fasit som både tekst og symbol.
-- Første TestFlight-beta har nettduell merket «kommer senere».
-  Privat innlogging er utsatt; solo, pakker og sofaduell trenger ingen konto.
+- Nettduell med fem felles spørsmål, kallenavn og romkode uten konto.
+- Solo, pakker og sofaduell krever fortsatt ingen konto.
 - Hjelp og personvern i appen, med godkjent supportkontakt.
 
 iOS-appen har egen fremdrift uten synkronisering/import fra nettversjonen.
-Quizpakker og sofaduell er aktive. Nettduellkoden beholdes for en senere beta. I3 er prøvd mot lokal
-server med to simulatorer. Privat kontoinnlogging må sluttkontrolleres; se
-[I3-testnotatene](I3_TESTING.md). Ingen App Store- eller TestFlight-opplasting er gjort.
+Quizpakker, sofaduell og native nettduell er aktive. To native klienter har
+fullført produksjonskamp uten konto. Gamle private innloggingsflyter er fjernet
+fra nettduellvisningen. Se [nettduelltestene](Distribution/ONLINE_BETA.md).
 
 ## I2: pakker og sofaduell
 
@@ -44,9 +50,8 @@ Biblioteket har seks pakker med 120 nye spørsmål. Filter for kategori, nivå o
 «Spill». Alle pakkenivåer er tilgjengelige uten å låse opp grunnspillets nivåer.
 
 Disse seks pakkene følger med appbygget. Å legge til er en kontrollert lokal
-installasjon, ikke nedlasting fra Internett. Nye pakker krever foreløpig en
-appoppdatering. Dette fungerer uten nett og uten den private nettsidens innlogging.
-Henting av en oppdatert nettkatalog og eksterne pakkenedlastinger inngår ikke i I2.
+installasjon uten nett. Fra 0.6.0 kan en felles offentlig katalog og nye pakker
+hentes fra GitHub Pages uten konto. Lagrede pakker fungerer uten nett.
 
 Byteantall, SHA-256, identitet, versjon, skjema og spørsmål valideres før pakken
 lagres atomisk i `Quizkrutt/packs-v1.json`. I1-filen `progress-v1.json` er uendret.
@@ -113,38 +118,33 @@ swift test --package-path ios --scratch-path /private/tmp/quizkrutt-swift-tests
 Spørsmål eksporteres fra `web/questions.js`. Serverbanken med nettduellfasit
 inkluderes ikke. Ingen nett-/kontohemmeligheter er lagt i appen.
 
-## Neste milepæler
+## Status før App Store-innsending – 1.0 (9)
 
-- [x] I1: native solospill og lokal simulatorversjon.
-- [x] I2: pakker og sofaduell i native grensesnitt, bygd og simulatorprøvd.
-- [ ] I3: native nettduell implementert og lokalt testet; privat kontoflyt venter på akseptanse.
-- [ ] I4: implementert og delvis verifisert; fysisk lyttetest med VoiceOver gjenstår.
-  Se [I4_TESTING.md](I4_TESTING.md).
-- [ ] I5: lokal 0.5.0-beta, signert utviklerarkiv og butikk-/personvernutkast klare.
-  App Store Connect og offentlige URL-er er klare; Apple-validering er bestått.
-  Intern TestFlight-opplasting er fullført; Apples prosessering følges opp.
-  Se [distribusjonspakken](Distribution/TESTFLIGHT.md).
+- [x] I1: native solospill.
+- [x] I2: quizpakker og sofaduell uten konto.
+- [x] I3: nettduell uten ChatGPT-konto på separat offentlig server. Full duell mellom fysisk iPhone og iPad fra TestFlight er verifisert.
+- [x] I4 sluttest: representativ VoiceOver-lyttetest bekreftet av Terje på begge fysiske enheter; iPad vindusdeling, appbytte og bevart fremdrift kontrollert. Full VoiceOver-dekning av samtlige flyter er ikke erklært.
+- [x] I5 klargjøring: Apple-validert og opplastet bygg 9, intern TestFlight, butikkbilder, norsk butikktekst og publisert App Privacy. Manuell publisering valgt.
+- [ ] Eiers godkjenning og innsending til App Review.
 
-PrivacyInfo.xcprivacy deklarerer appspesifikk UserDefaults-bruk (CA92.1), ingen
-sporing og ingen innsamlede data i offline-betaen. Ved aktivering av nettduell må
-manifest og App Privacy oppdateres for navn, spillinnhold, spiller-ID og leverandører.
-Solospillet samler ikke inn data. Server/innlogging og endelige App Store-opplysninger
-gjennomgås før distribusjon. Se I3_TESTING.md for sikkerhet og validering.
+Se [sluttrapporten for bygg 9](Distribution/FINAL_TEST_BUILD9.md) for konkret testdekning og bevis. Minimum iOS 17 er fortsatt ikke kjørt. Historiske I3/I4-notater under beskriver tidligere tester og må leses sammen med sluttrapporten.
+
+PrivacyInfo.xcprivacy deklarerer UserDefaults-bruk (CA92.1) og navn/kallenavn, spiller-ID og spillinnhold til nettduellens appfunksjonalitet, knyttet til spilleren uten sporing. App Privacy samsvarer og er publisert etter eiers bekreftelse. Solospill/sofaduell sender ikke spilldata; valgfri pakkelasting går til GitHub Pages. Appen krever ingen konto. Se [butikk-/personvernopplysninger](Distribution/APP_STORE_METADATA.nb.md).
 
 TestFlight-veiledning: https://developer.apple.com/help/app-store-connect/test-a-beta-version/testflight-overview/
 
 
-## I5: Apple-validert beta
+## Historikk: første Apple-validerte beta
 
 Første beta 0.5.0 (5) er etter avtale uten aktiv nettduell. Lokal Release-arkivering
 og signaturkontroll er utført med eksisterende Apple Development-signering. Dette
 er ikke Apple Distribution-signering eller en Apple-validert opplasting.
-Siste arkiv ligger i `.local/ios-release/Quizkrutt-0.5.0-6.xcarchive` fra prosjektroten.
+Arkivet for denne historiske betaen ligger i `.local/ios-release/Quizkrutt-0.5.0-6.xcarchive`. Nyeste kandidat er `.local/ios-release/Quizkrutt-1.0-9.xcarchive`.
 Apple-valideringen er bestått, appoppføring 6833974275 er opprettet, og intern
 TestFlight-opplasting er fullført. Apple-prosessering følges opp. Offentlige lenker er publisert og lagt i bygg 6.
 Se [TestFlight-pakken](Distribution/TESTFLIGHT.md), [butikktekstene](Distribution/APP_STORE_METADATA.nb.md)
 og [personvern-/supportutkastet](Distribution/PRIVACY_AND_SUPPORT.nb.md).
 
-For utviklertesting av I3 må bare Debug få `QUIZKRUTT_ONLINE_PREVIEW` i
-Active Compilation Conditions. Release kan ikke slå på nettduell med dette flagget.
-Privat innlogging skal fortsatt tas senere.
+Nettduell er aktiv i 0.7.0. Det gamle QUIZKRUTT_ONLINE_PREVIEW-flagget er fjernet.
+Bare Debug-simulator kan velge localhost med QUIZKRUTT_LOCAL_SERVER=1; Release
+bruker alltid den separate offentlige HTTPS-serveren.

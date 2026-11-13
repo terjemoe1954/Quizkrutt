@@ -6,12 +6,57 @@ import UIKit
     @Published var library = PackLibrary()
     @Published var error: String?
     @Published var blocked = false
+    @Published var fetching = false
+    @Published var downloading: Set<String> = []
+    @Published var catalogNotice: String?
+    private let root = URL(string:"https://terjemoe1954.github.io/app-page/quizkrutt/library/")!
+    private let catalogFile = URL.applicationSupportDirectory.appending(path:"Quizkrutt/catalog-v1.json")
+    private var bundled: [String:Int] = [:]
+    private func merge(_ entries: [PackEntry]) {
+        for entry in entries {if let index = catalog.firstIndex(where:{$0.id == entry.id}) {if entry.version > catalog[index].version {catalog[index] = entry}} else {catalog.append(entry)}}
+    }
+    private func checkedCatalog(_ data: Data) throws -> [PackEntry] {
+        guard data.count <= 1_000_000 else {throw QuizError.invalidData}
+        let entries = try JSONDecoder().decode([PackEntry].self,from:data)
+        guard entries.count <= 200, Set(entries.map(\.id)).count == entries.count,
+              entries.allSatisfy({$0.id.range(of:"^[a-z][a-z0-9-]{1,70}$",options:.regularExpression) != nil && $0.category.range(of:"^[a-z][a-z0-9-]{1,70}$",options:.regularExpression) != nil && $0.version > 0 && (10...200).contains($0.count) && (1...1_000_000).contains($0.bytes) && (0...2).contains($0.level) && !$0.title.isEmpty && $0.title.count <= 100 && !$0.description.isEmpty && $0.description.count <= 300 && $0.sha256.range(of:"^[a-f0-9]{64}$",options:.regularExpression) != nil && $0.file == "packs/\($0.id).v\($0.version).json"}) else {throw QuizError.invalidData}
+        return entries
+    }
+    private func fetch(_ url: URL) async throws -> Data {
+        var request = URLRequest(url:url,cachePolicy:.reloadIgnoringLocalCacheData,timeoutInterval:25)
+        request.httpShouldHandleCookies = false
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.httpCookieStorage = nil; configuration.urlCredentialStorage = nil
+        let session = URLSession(configuration:configuration); defer {session.invalidateAndCancel()}
+        let (data,response) = try await session.data(for:request)
+        guard let response = response as? HTTPURLResponse, response.statusCode == 200, response.url == url, data.count <= 1_000_000 else {throw QuizError.invalidData}
+        return data
+    }
+    func refreshCatalog() async {
+        guard !fetching else {return}; fetching = true; defer {fetching = false}
+        do {let data = try await fetch(root.appending(path:"catalog.json")); let entries = try checkedCatalog(data)
+            try FileManager.default.createDirectory(at:catalogFile.deletingLastPathComponent(),withIntermediateDirectories:true)
+            let old = catalog; merge(entries)
+            do {try JSONEncoder().encode(catalog).write(to:catalogFile,options:.atomic)} catch {catalog = old; throw error}
+            catalogNotice = "Biblioteket er oppdatert. Velg en pakke for å laste ned."
+        } catch {catalogNotice = "Kunne ikke hente biblioteket. Lagrede pakker er beholdt. Prøv igjen når du har nett."}
+    }
+    func resetProgress() {var next = library; next.resetProgress(); commit(next)}
+    func download(_ entry: PackEntry) async {
+        guard !blocked, !downloading.contains(entry.id) else {return}
+        if bundled[entry.id] == entry.version {install(entry); return}
+        downloading.insert(entry.id); defer {downloading.remove(entry.id)}
+        do {let data = try await fetch(root.appending(path:entry.file)); var next = library; try next.install(data,entry:entry); commit(next)}
+        catch {self.error = "Nedlastingen mislyktes. Tidligere innhold og resultater er beholdt. Prøv igjen."}
+    }
     private let disk = PackDisk(file:URL.applicationSupportDirectory.appending(path:"Quizkrutt/packs-v1.json"))
     init() {
         do {
             guard let url = Bundle.main.url(forResource:"pack-catalog",withExtension:"json") else {throw QuizError.invalidData}
             catalog = try JSONDecoder().decode([PackEntry].self,from:Data(contentsOf:url))
             guard Set(catalog.map(\.id)).count == catalog.count else {throw QuizError.invalidData}
+            bundled = Dictionary(uniqueKeysWithValues:catalog.map {($0.id,$0.version)})
+            if let data = try? Data(contentsOf:catalogFile), let cached = try? checkedCatalog(data) {merge(cached)}
             library = try disk.load()
         } catch {blocked = true; self.error = "Pakkebiblioteket kunne ikke leses. Eksisterende data er bevart og blir ikke overskrevet. Solospillet kan fortsatt brukes."}
     }
@@ -106,8 +151,11 @@ struct PackLibraryView: View {
         ScrollView {
             VStack(alignment:.leading,spacing:22) {
                 Text("Finn ditt neste aha.").font(.system(.largeTitle,design:.rounded,weight:.heavy)).accessibilityAddTraits(.isHeader)
-                Text("Seks pakker. 120 nye spørsmål. Legg til favorittene og spill dem her i appen.").foregroundStyle(Color.muted)
-                Label("Pakkene følger med appen. Å legge dem til krever ikke nett.",systemImage:"wifi.slash").font(.footnote).padding().background(Color.lime.opacity(0.3),in:RoundedRectangle(cornerRadius:15))
+                Text("Nye quizpakker og flere temaer. Last ned favorittene og spill dem uten nett.").foregroundStyle(Color.muted)
+                Label("De seks medfølgende pakkene virker uten nett. Nye pakker hentes fra GitHub Pages uten konto.",systemImage:"square.stack.3d.up").font(.footnote).padding().background(Color.lime.opacity(0.3),in:RoundedRectangle(cornerRadius:15))
+                Button(packs.fetching ? "Henter biblioteket …":"Hent nye quizpakker",systemImage:"arrow.clockwise") {Task {await packs.refreshCatalog()}}.disabled(packs.fetching)
+                Text("Ved henting mottar GitHub vanlige forbindelsesopplysninger, som IP-adresse. Ingen spillresultater sendes.").font(.footnote)
+                if let notice = packs.catalogNotice {Text(notice).font(.footnote).accessibilityLabel(notice)}
                 if let active = packs.library.active {
                     VStack(alignment:.leading,spacing:12) {
                         Text("Påbegynt: \(active.entry.title)").font(.headline)
@@ -118,7 +166,9 @@ struct PackLibraryView: View {
                 VStack(alignment:.leading,spacing:14) {
                     Picker("Tema",selection:$category) {
                         Text("Alle temaer").tag("all")
-                        if let bank = store.bank {ForEach(bank.categories) {Text($0.name).tag($0.id)}}
+                        ForEach(Array(Set(packs.catalog.map(\.category))).sorted(),id:\.self) {id in
+                            Text(store.bank?.categories.first(where:{$0.id == id})?.name ?? packs.catalog.first(where:{$0.category == id})?.categoryName ?? id).tag(id)
+                        }
                     }
                     Picker("Nivå",selection:$level) {
                         Text("Alle nivåer").tag(-1)
@@ -148,17 +198,20 @@ struct PackLibraryView: View {
         let history = packs.library.history[entry.key]
         let cat = store.bank?.categories.first {$0.id == entry.category}
         return VStack(alignment:.leading,spacing:14) {
-            HStack {Text(cat?.icon ?? "✳︎").font(.largeTitle).accessibilityHidden(true); Spacer(); Text("20 spørsmål · v\(entry.version)").font(.caption)}
+            HStack {Text(cat?.icon ?? "✳︎").font(.largeTitle).accessibilityHidden(true); Spacer(); Text("\(entry.count) spørsmål · v\(entry.version)").font(.caption)}
             Text(entry.title).font(.title2.bold())
             Text(entry.description).foregroundStyle(Color.muted)
-            Text("\(cat?.name ?? entry.category) · \(store.bank?.levelNames[entry.level] ?? "")").font(.subheadline.bold())
+            Text("\(cat?.name ?? entry.categoryName ?? entry.category) · \(store.bank?.levelNames[entry.level] ?? "")").font(.subheadline.bold())
             if let history {Text("Beste: \(history.best)/1000 · \(history.rounds) \(history.rounds == 1 ? "runde":"runder")").font(.subheadline)}
             if installed {
                 Label("Lagt til · klar uten nett",systemImage:"checkmark.circle.fill").font(.footnote).foregroundStyle(Color.muted)
                 Button("Spill \(entry.title)") {packs.start(entry.id); playing = packs.library.active != nil}.buttonStyle(KruttButton()).disabled(packs.blocked || packs.library.active != nil)
+                if let saved = packs.library.installed[entry.id], saved.entry.version < entry.version {
+                    Button("Last ned oppdatering") {Task {await packs.download(entry)}}.disabled(packs.downloading.contains(entry.id))
+                }
                 Button("Fjern pakke",role:.destructive) {removeEntry = entry}.frame(minHeight:44).disabled(packs.blocked)
             } else {
-                Button("Legg til \(entry.title)",systemImage:"plus.circle") {packs.install(entry)}.buttonStyle(KruttButton()).disabled(packs.blocked)
+                Button(packs.downloading.contains(entry.id) ? "Henter …":"Last ned \(entry.title)",systemImage:"arrow.down.circle") {Task {await packs.download(entry)}}.buttonStyle(KruttButton()).disabled(packs.blocked || packs.downloading.contains(entry.id))
             }
         }.padding(22).frame(maxWidth:.infinity,alignment:.leading).background(.white,in:RoundedRectangle(cornerRadius:23))
     }

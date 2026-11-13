@@ -1,5 +1,5 @@
-import {validId,validQuestion,validatePack} from './pack-format.js?v=m6-2';
-import {bank,categories} from './questions.js?v=m6-2';
+import {validId,validQuestion,validatePack} from './pack-format.js?v=m7-1';
+import {bank,categories} from './questions.js?v=m7-1';
 export const STORAGE_KEY='quizkrutt.progress.v2';
 const byId=new Map(bank.map(q=>[q.id,q]));
 const bucket=(category,level)=>`${category}:${level}`;
@@ -68,7 +68,7 @@ export function validateState(raw){
  if(raw.packProgress!==undefined){
   if(!raw.packProgress||typeof raw.packProgress!=='object'||Array.isArray(raw.packProgress)||Object.keys(raw.packProgress).length>200)throw Error('Ugyldig pakkehistorikk.');
   for(const [key,p] of Object.entries(raw.packProgress)){
-   if(!p||!validId(p.id)||!Number.isSafeInteger(p.version)||p.version<1||key!==`${p.id}@${p.version}`||!categories.some(c=>c.id===p.category)||!Number.isInteger(p.level)||p.level<0||p.level>2||typeof p.title!=='string'||p.title.length>100||!Number.isInteger(p.best)||p.best<0||p.best>1000||p.best%100||!Number.isSafeInteger(p.rounds)||p.rounds<0||!Array.isArray(p.seen)||p.seen.length>200||p.seen.some(x=>!validId(x)))throw Error('Ugyldig pakkeresultat.');
+   if(!p||!validId(p.id)||!Number.isSafeInteger(p.version)||p.version<1||key!==`${p.id}@${p.version}`||!validId(p.category)||!Number.isInteger(p.level)||p.level<0||p.level>2||typeof p.title!=='string'||p.title.length>100||!Number.isInteger(p.best)||p.best<0||p.best>1000||p.best%100||!Number.isSafeInteger(p.rounds)||p.rounds<0||!Array.isArray(p.seen)||p.seen.length>200||p.seen.some(x=>!validId(x)))throw Error('Ugyldig pakkeresultat.');
    state.packProgress[key]=clone(p);
   }
  }
@@ -77,7 +77,7 @@ export function validateState(raw){
  if(raw.active!==null){
   const a=raw.active;
   if(a?.type!==undefined&&a.type!=='pack')throw Error('Ukjent rundetype.');
-  if(!(a.type==='pack'?categories.some(c=>c.id===a.category)&&Number.isInteger(a.level)&&a.level>=0&&a.level<3:validTarget(a))||!Array.isArray(a.cards)||a.cards.length!==10||new Set(a.cards.map(c=>c.id)).size!==10||!Number.isInteger(a.index)||a.index<0||a.index>9||!Array.isArray(a.answers)||a.answers.length<a.index||a.answers.length>a.index+1||a.answers.some(n=>!Number.isInteger(n)||n<0||n>3))throw Error('Ugyldig runde.');
+  if(!(a.type==='pack'?validId(a.category)&&Number.isInteger(a.level)&&a.level>=0&&a.level<3:validTarget(a))||!Array.isArray(a.cards)||a.cards.length!==10||new Set(a.cards.map(c=>c.id)).size!==10||!Number.isInteger(a.index)||a.index<0||a.index>9||!Array.isArray(a.answers)||a.answers.length<a.index||a.answers.length>a.index+1||a.answers.some(n=>!Number.isInteger(n)||n<0||n>3))throw Error('Ugyldig runde.');
   if(a.type==='pack'&&(!validId(a.packId)||!Number.isSafeInteger(a.packVersion)||a.packVersion<1||typeof a.packTitle!=='string'||a.packTitle.length>100))throw Error('Ugyldig pakkerunde.');
   for(const card of a.cards){if(a.type!=='pack'&&card.snapshot!==undefined)throw Error('Ugyldig grunnspørsmål.');const q=a.type==='pack'?card.snapshot:byId.get(card.id);if(a.type==='pack'&&(!validQuestion(q)||q.id!==card.id))throw Error('Ugyldig pakkespørsmål.');if(!q||(a.type!=='pack'&&(q.category!==a.category||q.level!==a.level))||!Array.isArray(card.order)||card.order.length!==4||[...card.order].sort().join('')!=='0123'||card.correct!==card.order.indexOf(q.correct))throw Error('Ugyldig spørsmål.');}
   if(a.type==='pack'&&a.answers.length&&!state.packProgress[`${a.packId}@${a.packVersion}`])throw Error('Mangler pakkehistorikk.');
@@ -89,6 +89,7 @@ export function createStore(storage){
  let lastRaw=null,blocked=false;
  return {
   load(){try{lastRaw=storage.getItem(STORAGE_KEY);return {state:lastRaw===null?emptyState():validateState(JSON.parse(lastRaw)),error:null};}catch{blocked=true;return {state:emptyState(),error:'Fremdriften kunne ikke leses. Du kan spille, men nye resultater lagres bare i denne økten. Eksisterende lagring blir ikke overskrevet.'};}},
+  reset(){if(blocked)return {ok:false,error:"Lagringen er blokkert. Last siden på nytt før nullstilling."};try{if(storage.getItem(STORAGE_KEY)!==lastRaw)throw Error();const value=emptyState(),raw=JSON.stringify(value);storage.setItem(STORAGE_KEY,raw);lastRaw=raw;return {ok:true,state:value};}catch{return {ok:false,error:"Kunne ikke nullstille. Eksisterende fremdrift er beholdt. Last siden på nytt og prøv igjen."};}},
   save(state){if(blocked)return {ok:false,error:'Lagringen er utilgjengelig. Fremdriften beholdes bare i denne økten.'};try{if(storage.getItem(STORAGE_KEY)!==lastRaw){blocked=true;return {ok:false,error:'Fremdriften er endret i en annen fane. Last siden på nytt for å hente den. Denne økten overskriver ikke den andre fanen.'};}const raw=JSON.stringify(state);storage.setItem(STORAGE_KEY,raw);lastRaw=raw;return {ok:true,error:null};}catch{return {ok:false,error:'Kunne ikke lagre fremdriften. Behold denne fanen åpen og prøv «Lagre på nytt». Hvis du lukker den, kan siste endringer gå tapt.'};}},
  };
 }

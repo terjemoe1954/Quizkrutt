@@ -10,6 +10,8 @@ import subprocess
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('archive', type=Path)
 parser.add_argument('--build', default='6')
+parser.add_argument('--version', default='0.5.0')
+parser.add_argument('--online', action='store_true')
 args = parser.parse_args()
 archive = args.archive.resolve()
 def require(condition, message):
@@ -19,7 +21,7 @@ meta = plistlib.loads((archive / 'Info.plist').read_bytes())
 app = archive / 'Products' / meta['ApplicationProperties']['ApplicationPath']
 info = plistlib.loads((app / 'Info.plist').read_bytes())
 require(info['CFBundleIdentifier'] == 'no.quizkrutt.ios', 'unexpected bundle ID')
-require(info['CFBundleShortVersionString'] == '0.5.0' and info['CFBundleVersion'] == args.build, 'unexpected version')
+require(info['CFBundleShortVersionString'] == args.version and info['CFBundleVersion'] == args.build, 'unexpected version')
 require(info['CFBundleSupportedPlatforms'] == ['iPhoneOS'], 'archive is not for a real iOS device')
 require(set(info['UIDeviceFamily']) == {1, 2}, 'iPhone and iPad must both be supported')
 require(info.get('ITSAppUsesNonExemptEncryption') is False, 'export compliance flag missing')
@@ -27,7 +29,12 @@ require(not info.get('NSAppTransportSecurity', {}).get('NSAllowsArbitraryLoads',
 require(len(info['UISupportedInterfaceOrientations~ipad']) == 4, 'all iPad orientations required')
 privacy = plistlib.loads((app / 'PrivacyInfo.xcprivacy').read_bytes())
 require(privacy['NSPrivacyTracking'] is False, 'tracking enabled')
-require(privacy['NSPrivacyCollectedDataTypes'] == [], 'offline beta must not declare active online collection')
+if args.online:
+    values = privacy['NSPrivacyCollectedDataTypes']
+    require({p['NSPrivacyCollectedDataType'] for p in values} == {'NSPrivacyCollectedDataTypeName','NSPrivacyCollectedDataTypeUserID','NSPrivacyCollectedDataTypeGameplayContent'}, 'online privacy types missing')
+    require(all(p['NSPrivacyCollectedDataTypeLinked'] is True and p['NSPrivacyCollectedDataTypeTracking'] is False and p['NSPrivacyCollectedDataTypePurposes'] == ['NSPrivacyCollectedDataTypePurposeAppFunctionality'] for p in values), 'online privacy purposes mismatch')
+else:
+    require(privacy['NSPrivacyCollectedDataTypes'] == [], 'offline beta must not declare active online collection')
 require(any(p['NSPrivacyAccessedAPIType'] == 'NSPrivacyAccessedAPICategoryUserDefaults' and 'CA92.1' in p['NSPrivacyAccessedAPITypeReasons'] for p in privacy['NSPrivacyAccessedAPITypes']), 'UserDefaults reason missing')
 # Xcode may flatten synchronized resource directories; find each unique resource.
 def resource(name):
@@ -46,5 +53,5 @@ require((archive / 'dSYMs' / 'Quizkrutt.app.dSYM').is_dir(), 'debug symbols miss
 identity = meta['ApplicationProperties'].get('SigningIdentity', '')
 if identity:
     subprocess.run(['codesign', '--verify', '--deep', '--strict', str(app)], check=True)
-print(json.dumps({'result': 'PASS', 'version': '0.5.0 (' + args.build + ')', 'platform': 'iPhoneOS', 'questions': 540, 'pack_questions': 120, 'signed': bool(identity), 'distribution_signed': identity.startswith('Apple Distribution'), 'apple_upload_validated': False}, indent=2))
+print(json.dumps({'result': 'PASS', 'version': args.version + ' (' + args.build + ')', 'platform': 'iPhoneOS', 'questions': 540, 'pack_questions': 120, 'signed': bool(identity), 'distribution_signed': identity.startswith('Apple Distribution'), 'apple_upload_validated': False}, indent=2))
 print('Local checks only. App Store Connect validation, public URLs and final QA remain required.')

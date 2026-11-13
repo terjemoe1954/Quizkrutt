@@ -1,4 +1,4 @@
-import {categories,levelNames} from './questions.js?v=m6-2';
+import {categories,levelNames} from './questions.js?v=m7-1';
 const PREFIX='quizkrutt.online.';
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const token=()=>Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');

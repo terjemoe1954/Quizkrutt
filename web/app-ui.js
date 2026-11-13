@@ -1,5 +1,5 @@
-import {loadPreferences,savePreferences,createFeedbackSound} from './preferences.js?v=m6-2';
-import {release} from './release.js?v=m6-2';
+import {loadPreferences,savePreferences,createFeedbackSound} from './preferences.js?v=m7-1';
+import {release} from './release.js?v=m7-1';
 export function createAppUi({storage}){
  const loaded=loadPreferences(storage);let preferences=loaded.value,notice=loaded.error;
  function apply(){document.documentElement.dataset.text=String(preferences.textSize);document.documentElement.dataset.reduceMotion=String(preferences.reduceMotion);}

@@ -1,0 +1,16 @@
+{
+  "iphone": {
+    "name": "Quizkrutt",
+    "bundleIdentifier": "no.quizkrutt.ios",
+    "version": "1.0",
+    "bundleVersion": "9",
+    "builtByDeveloper": true
+  },
+  "ipad": {
+    "name": "Quizkrutt",
+    "bundleIdentifier": "no.quizkrutt.ios",
+    "version": "1.0",
+    "bundleVersion": "9",
+    "builtByDeveloper": true
+  }
+}

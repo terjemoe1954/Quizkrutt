@@ -7,6 +7,25 @@ final class I2Tests: XCTestCase {
     func catalog() throws -> [PackEntry] {try JSONDecoder().decode([PackEntry].self,from:Data(contentsOf:resources.appending(path:"pack-catalog.json")))}
     func payload(_ entry: PackEntry) throws -> Data {try Data(contentsOf:resources.appending(path:URL(fileURLWithPath:entry.file).lastPathComponent))}
     func bank() throws -> QuestionBank {try JSONDecoder().decode(QuestionBank.self,from:Data(contentsOf:resources.appending(path:"questions.json")))}
+    func testResetPreservesDownloadedPacksAndPersistsEmptyHistory() throws {
+        let entry = try XCTUnwrap(catalog().first)
+        var library = PackLibrary(); try library.install(payload(entry),entry:entry); try library.start(entry.id)
+        XCTAssertTrue(library.answer(0)); XCTAssertFalse(library.history.isEmpty)
+        library.resetProgress(); XCTAssertNil(library.active); XCTAssertTrue(library.history.isEmpty)
+        XCTAssertEqual(library.installed.count,1)
+        let roundTrip = try JSONDecoder().decode(PackLibrary.self,from:JSONEncoder().encode(library)); try roundTrip.validate()
+        XCTAssertEqual(roundTrip.installed.count,1); XCTAssertTrue(roundTrip.history.isEmpty)
+    }
+    func testDownloadedNewCategoryCanBeRestored() throws {
+        let root = resources.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let entries = try JSONDecoder().decode([PackEntry].self,from:Data(contentsOf:root.appending(path:"web/library/catalog.json")))
+        let entry = try XCTUnwrap(entries.first(where:{$0.category == "history"}))
+        let data = try Data(contentsOf:root.appending(path:"web/library/" + entry.file))
+        var library = PackLibrary(); try library.install(data,entry:entry); try library.start(entry.id)
+        XCTAssertTrue(library.answer(0)); try library.validate()
+        let restored = try JSONDecoder().decode(PackLibrary.self,from:JSONEncoder().encode(library)); try restored.validate()
+        XCTAssertEqual(restored.active?.entry.category,"history")
+    }
     func testAllSixPackChecksumsAnd120UniqueQuestions() throws {
         let entries = try catalog(); XCTAssertEqual(entries.count,6)
         var ids = Set<String>()

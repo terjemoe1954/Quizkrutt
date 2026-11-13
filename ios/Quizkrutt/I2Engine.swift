@@ -12,6 +12,7 @@ struct PackEntry: Codable, Identifiable {
     let bytes: Int
     let sha256: String
     let file: String
+    var categoryName: String? = nil
     var key: String {"\(id)@\(version)"}
 }
 struct PackQuestion: Codable {
@@ -39,7 +40,7 @@ func validNativeQuestion(_ q: Question) -> Bool {
     !q.explanation.isEmpty && q.options.count == 4 && Set(q.options).count == 4 &&
     q.options.allSatisfy {!$0.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty} &&
     (0...3).contains(q.correct) && (0...2).contains(q.level) &&
-    ["mix","world","nature","culture","sport","science"].contains(q.category)
+    q.category.range(of:"^[a-z][a-z0-9-]{1,70}$",options:.regularExpression) != nil
 }
 func validatePack(_ data: Data, entry: PackEntry) throws -> QuizPack {
     guard entry.id.range(of:"^[a-z0-9]+(-[a-z0-9]+)*$",options:.regularExpression) != nil,
@@ -86,6 +87,7 @@ struct PackLibrary: Codable {
         if let old = installed[entry.id], old.entry.version > entry.version {throw QuizError.invalidData}
         installed[entry.id] = InstalledPack(entry:entry,data:data)
     }
+    mutating func resetProgress() {history = [:]; active = nil}
     mutating func remove(_ id: String) {installed.removeValue(forKey:id)}
     mutating func start(_ id: String) throws {
         guard active == nil else {throw QuizError.unfinished}

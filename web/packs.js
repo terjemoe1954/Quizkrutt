@@ -1,4 +1,4 @@
-import {validatePack} from './pack-format.js?v=m6-2';
+import {validatePack} from './pack-format.js?v=m7-1';
 export const PACK_PREFIX='quizkrutt.pack.';
 export const packKey=(id,version)=>`${id}@${version}`;
 export function recommendPacks(catalog,category,level){
@@ -13,7 +13,7 @@ export function createPackLibrary(storage,catalog,{fetcher=(...args)=>fetch(...a
   // Les eksisterende versjon før nettverkskallet. En annen fane må ikke overskrives.
   let previous;try{previous=storage.getItem(PACK_PREFIX+id);}catch{throw Error('Lagring er ikke tilgjengelig. Quizpakken ble ikke lastet ned.');}
   if(previous){try{if(JSON.parse(previous).pack?.version>item.version)throw Error('newer');}catch(error){if(error.message==='newer')throw Error('En nyere pakkeversjon er allerede lagret. Oppdater appen før du laster ned på nytt.');}}
-  const response=await fetcher('./'+item.file,{cache:'no-store',signal,credentials:'same-origin'});
+  const response=await fetcher(item.remote ? 'https://terjemoe1954.github.io/app-page/quizkrutt/library/'+item.file : './'+item.file,{cache:'no-store',signal,credentials:item.remote?'omit':'same-origin',referrerPolicy:'no-referrer'});
   if(!response.ok||response.redirected)throw Error('Kunne ikke hente quizpakken. Kontroller nettet og innloggingen, og prøv igjen.');
   const max=item.bytes;let bytes;
   if(response.body?.getReader){const reader=response.body.getReader(),chunks=[];let received=0;try{while(true){if(signal?.aborted)throw new DOMException('Avbrutt','AbortError');const {done,value}=await reader.read();if(done)break;received+=value.length;if(received>max)throw Error('Quizpakken er større enn forventet. Ingen lagret pakke ble endret.');chunks.push(value);onProgress(received,max);}bytes=new Uint8Array(received);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length;}}finally{try{await reader.cancel();}catch{}reader.releaseLock();}}

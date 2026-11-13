@@ -64,3 +64,10 @@ satt tilbake til observerte utgangsverdier (3 / av).
 - [Største tekst: neste spørsmål øverst](preview-i4-iphone-large.png)
 - [VoiceOver: fokus på spørsmål](preview-i4-voiceover-focus.png)
 - [VoiceOver: skjult overlevering](preview-i4-ipad-voiceover.png)
+
+
+## Oppdatert fysisk sluttest – 13. november 2026
+
+I TestFlight 1.0 (9) er førstegangsveiledningen passert. Representativ fysisk VoiceOver-test er gjennomført på iPhone 15 Pro og iPad 10 (begge 27.2.1). Terje bekreftet forståelig opplesning på begge. iPhone: hjelp, kategorier, nivå og solospørsmål/svar/fasit. iPad: bibliotek, tillegg av pakke, pakkespørsmål/svar/fasit. Fokusrammer og dobbelttrykk/navigasjon kontrollert. iPad multitasking og appbytte på begge samt full nettduell uten konto er bestått.
+
+Dette erstatter de relevante tidligere punktene om manglende lyttetest, multitasking og privat kontoakseptanse. Alle skjermer med VoiceOver, full fysisk sofaduell og minimum iOS 17 er ikke testet på nytt. Se Distribution/FINAL_TEST_BUILD9.md for presis avgrensning og bevis.

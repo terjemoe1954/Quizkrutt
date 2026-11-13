@@ -331,3 +331,50 @@ Apple viser bygg 0.5.0 (6) som «Complete» og «Ready to Test».
 Bygget er lagt til den eksisterende interne gruppen «Internal»; gruppen er
 markert valgt på bygget. Ingen nye testere er invitert i denne kontrollen.
 Dokumentasjon: `ios/Distribution/preview-testflight-build6-ready.png` (fra prosjektroten).
+
+
+## I6 / M7 - nullstilling og felles quizbibliotek (13. november 2026)
+
+- [x] iOS 0.6.0 (7): nullstill solo eller pakkehistorikk etter bekreftelse.
+- [x] Web: nullstill lokal solo- og pakkefremdrift etter bekreftelse.
+- [x] Pakker og innstillinger beholdes; andre enheter påvirkes ikke.
+- [x] Offentlig GitHub Pages-katalog deles mellom web og iOS uten konto.
+- [x] Åtte pakker / 140 pakkespørsmål, inkludert Historie og Mat og drikke.
+- [x] Medfølgende seks pakker fungerer fortsatt uten nett; hentede pakker lagres lokalt.
+- [x] Filstørrelse, format og SHA-256 kontrolleres før pakker installeres.
+- [x] Webtester og Swift-motortester; simulatorhenting på iPhone 17 og iPad Pro 13 M5.
+- [x] iPhone: lastet ned historiepakken, svart riktig (+100), pauset og nullstilt pakkehistorikk; installert pakke bevart på disk.
+- [x] Web: kataloghenting, ny kategori, nedlasting, spill og nullstilling med bevart pakke også etter omlasting.
+- [x] 0.6.0 (7) Apple-validert og lastet opp til intern TestFlight.
+- [x] Bygg 7 viser Testing og er knyttet til eksisterende Internal-gruppe.
+- [x] Privat Sites-webversjon 7 publisert, bekreftet live med nye bibliotekstemaer.
+
+Ingen nye innloggingskrav. Nettduell er fortsatt deaktivert i iOS-betaen.
+Eksisterende brukerfremdrift ble ikke nullstilt under utviklingen: egne simulator-app-IDer og egen webopprinnelse ble brukt.
+
+
+## I7 - nettduell uten ChatGPT-konto
+
+- [x] Bruker valgte kallenavn og romkode uten konto.
+- [x] Separat Sites-server og database opprettet og publisert privat.
+- [x] iOS 0.7.0 (8) klargjort med native nettduell, ny Keychain-service og personvernmanifest.
+- [x] Bygg og 27 Swift-tester består; native grensesnitt kontrollert i simulator.
+- [x] Ny nettduellserver offentlig etter brukerens uttrykkelige godkjenning.
+- [x] Full produksjonskamp med to native klienter uten konto, omstart, gjenforsøk og avbrudd.
+- [x] Personvern/support og Apple-betaopplysninger publisert for 0.7.0.
+- [x] 0.7.0 (8) Apple-validert, lastet opp og aktiv i eksisterende Internal-gruppe (Testing).
+
+
+## I8 – App Store-klargjøring 1.0 (9)
+
+- [x] Lanseringsnummer, arkiv, lokal kontroll og Apple-validering.
+- [x] Bygg 9 lastet opp, valgt for butikkversjonen og knyttet til Internal.
+- [x] Ti ekte butikkbilder for iPhone og iPad lastet opp og behandlet.
+- [x] Norsk butikktekst, Games/Trivia, beregnet aldersvurdering og manuell publisering.
+- [x] Gratispris og alle land valgt etter eierens ønske; lokale Apple-begrensninger gjelder.
+- [x] App Privacy publisert etter eierens bekreftelse.
+- [x] Stor tekst på begge simulatorer og liggende iPad kontrollert.
+- [x] Fysisk TestFlight-sluttest av bygg 9, lyttetest med VoiceOver bekreftet av Terje på begge, iPad multitasking og full nettduell med identiske resultater.
+- [x] Eier godkjente innsending; Apple bekreftet 1 Item Submitted for 1.0 (9), 13. november 2026. Manuell publisering beholdt.
+
+Se ios/Distribution/VALIDATION.md og APP_STORE_METADATA.nb.md. Ingen App Store-innsending eller offentlig lansering er utført.

@@ -87,7 +87,7 @@ import XCTest
 }
 @MainActor final class I3LiveTests: XCTestCase {
     func testTwoNativeClientsWithRealServerReplayRestartAndCancellation() async throws {
-        guard let raw = ProcessInfo.processInfo.environment["QUIZKRUTT_INTEGRATION_ORIGIN"], let origin = URL(string:raw), origin.host == "127.0.0.1" else {throw XCTSkip("Set local integration origin to test the actual server")}
+        guard let raw = ProcessInfo.processInfo.environment["QUIZKRUTT_INTEGRATION_ORIGIN"], let origin = URL(string:raw), (origin.host == "127.0.0.1" || (origin.absoluteString == "https://quizkrutt-online.terjemoe54.chatgpt.site" && ProcessInfo.processInfo.environment["QUIZKRUTT_PUBLIC_DUEL_TEST"] == "1")) else {throw XCTSkip("Set an explicitly permitted integration origin to test the actual server")}
         let hostVault = MemoryOnlineVault(), guestVault = MemoryOnlineVault()
         let flaky = DropOneAnswerResponse(origin:origin)
         var host = OnlineStore(transport:flaky,vault:hostVault)

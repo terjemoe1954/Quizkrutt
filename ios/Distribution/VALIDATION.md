@@ -78,3 +78,39 @@ Apple viser bygg 0.5.0 (6) som «Complete» og «Ready to Test».
 Bygget er lagt til den eksisterende interne gruppen «Internal»; gruppen er
 markert valgt på bygget. Ingen nye testere er invitert i denne kontrollen.
 Dokumentasjon: `ios/Distribution/preview-testflight-build6-ready.png` (fra prosjektroten).
+
+
+## Lanseringskandidat 1.0 (9) – 13. november 2026
+
+- Release-arkiv og lokal arkivkontroll bestått (`--build 9 --version 1.0 --online`).
+- Apple-validering: Validated Quizkrutt / EXPORT SUCCEEDED.
+- App Store-opplasting 08:50 UTC+1: Uploaded Quizkrutt / EXPORT SUCCEEDED. Ikke internal-only.
+- Apple behandler bygget ferdig: Binary State Validated. Bygg 9 valgt og lagret for versjon 1.0.
+- Eksisterende Internal-gruppe med én tester lagt til; oversikten viser Ready to Submit, Internal og én invitasjon. Ingen ekstern beta-review sendt.
+- Fem skjermbilder for iPhone 1206×2622 og fem for iPad 2064×2752 lastet opp og behandlet av Apple. Fem av ti synlige i begge grupper etter navigering tilbake.
+- Butikktekst, support, copyright, reviewnotater, sign-in av, Games/Trivia og aldersskjema lagret.
+- Personvern: Name/User ID/Gameplay Content, kun App Functionality, linked, ingen tracking. Publisert etter uttrykkelig godkjenning av Apples bekreftelse.
+- Gratispris og alle 175 land valgt. Apple kan begrense faktisk tilgjengelighet etter lokale regler.
+- Manuell publisering valgt. Ikke sendt til App Review og ikke lansert.
+
+### Testing og grenser
+
+Separat simulator-ID `no.quizkrutt.storepreview` ble brukt; eksisterende Quizkrutt-data ble ikke nullstilt. iPhone 17 og iPad Pro 13 M5 på iOS/iPadOS 27.2: appstart, native solo, nettduellskjerm, bibliotek med åtte pakker, sofaduellskjerm og reversibel navigering kontrollert. Korrekt svar ga +100 og forklaring på begge. Største Dynamic Type kontrollerte lesbarhet og rulling til fasit/neste knapp. iPad viste neste spørsmål med bevarte 100 poeng i liggende visning. Tekststørrelse gjenopprettet og statuslinjeoverstyring fjernet.
+
+Tidligere produksjonstest av uendret nettduellkode: to native klienter, alle fem spørsmål, gjenforsøk/omstart/avbrudd uten ChatGPT-konto. Tidligere 58 webtester og 27 beståtte Swift-tester (én foreldet privat innloggingstest hoppet over) er grunnlaget; denne kandidaten endrer versjonsnummer og distribusjonsmateriell.
+
+Før endelig butikkinnsending: fysisk installasjon/oppdatering av bygg 9 på begge enheter og en runde nettduell; lyttetest med VoiceOver; iPad multitasking og minimum iOS 17 hvis en passende testenhet finnes. Full VoiceOver-støtte er ikke erklært. Simulatorgjennomgang erstatter ikke disse manuelle kontrollene.
+
+Offentlige GitHub-sider oppdatert i app-page commit `75eef1b` for 1.0, inkludert fjerning av gamle motstridende «nettduell kommer senere»-tekster. GitHub Pages-jobb 43390279809 fullført med success; appside, support og personvern verifisert HTTP 200 med 1.0-tekst etter publisering. Hovedprosjektets øvrige kildekode er ikke committet eller pushet i denne klargjøringen.
+
+
+## Fysisk sluttest 13. november 2026 – 1.0 (9)
+
+Bestått på fysisk iPhone 15 Pro og iPad 10, begge OS 27.2.1, fra TestFlight. Terje bekreftet forståelig VoiceOver-opplesning i testflytene på begge. iPad side om side med Innstillinger og videre quiz i smalt vindu fungerte; appbytte beholdt fremdrift på begge. Full femspørsmåls nettduell uten konto ga identiske serverbekreftede sluttresultater: 500/500 til begge. VoiceOver av og opprinnelig iPad-fullskjermmodus gjenopprettet. Ingen appdata nullstilt.
+
+Se FINAL_TEST_BUILD9.md for detaljert bevis og avgrensning. Tidligere oppført fysisk sluttest/lyttetest/multitasking er nå gjennomført; minimum iOS 17 og full VoiceOver-dekning av alle flyter er fortsatt ikke testet. Ingen nye feil ble påvist, og kandidaten anbefales for eiers godkjenning av innsending. Appen er ikke sendt til App Review.
+
+
+## Sendt til App Review – 13. november 2026
+
+Etter eiers uttrykkelige godkjenning ble 1.0 (9) sendt til App Review ca. 09:30 Europe/Oslo. Apple bekreftet «1 Item Submitted». Innsending: 5b52fe19-e27f-4b33-aa56-1ae522a9f66c. Manually release this version ble bekreftet valgt før innsending; appen er ikke offentlig lansert. Bevis: AppStore/quizkrutt-build9-submitted.png.

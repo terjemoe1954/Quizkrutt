@@ -46,7 +46,7 @@ enum OnlineFailure: Error, LocalizedError {
     case login, network, invalidResponse, storage, message(String), server(Int,String)
     var errorDescription: String? {
         switch self {
-        case .login: return "Logg inn med en konto som har tilgang til den private Quizkrutt-testen."
+        case .login: return "Nettduellserveren er ikke tilgjengelig som forventet. Prøv igjen senere."
         case .network: return "Ingen bekreftelse fra serveren. Kontroller nettet og prøv igjen. Et svar kan allerede være lagret."
         case .invalidResponse: return "Serverens svar kunne ikke kontrolleres. Prøv å oppdatere status."
         case .storage: return "Spilleradgangen kunne ikke lagres i nøkkelringen. Ingen ny handling ble sendt. Prøv igjen før du lukker appen."

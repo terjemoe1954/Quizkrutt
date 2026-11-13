@@ -33,6 +33,11 @@ import UIKit
             error = nil
         } catch { self.error = "Fremdriften er i minnet, men kunne ikke lagres. Frigjør plass og trykk Prøv lagring igjen før du lukker appen." }
     }
+    func resetProgress() {
+        guard !storageBlocked else {return}
+        do {try FileManager.default.createDirectory(at:file.deletingLastPathComponent(),withIntermediateDirectories:true); let fresh = QuizProgress(); try JSONEncoder().encode(fresh).write(to:file,options:.atomic); progress = fresh; error = nil}
+        catch {self.error = "Kunne ikke nullstille. Fremdriften er beholdt."}
+    }
     func start(_ category: String, _ level: Int) {
         guard let bank, !storageBlocked else {return}
         do {try progress.start(category:category,level:level,bank:bank); save()}
@@ -219,6 +224,10 @@ struct RoundView: View {
     }
 }
 struct SettingsView: View {
+    @EnvironmentObject var store: GameStore
+    @EnvironmentObject var packs: PackStore
+    @State private var resetScope: String?
+
     @Environment(\.dismiss) private var dismiss
     @AppStorage("quizkrutt.haptics") private var haptics = false
     var body: some View {
@@ -228,8 +237,14 @@ struct SettingsView: View {
                     Toggle("Vibrasjon ved svar",isOn:$haptics)
                     Text("Av som standard. Tekststørrelse og redusert bevegelse følger innstillingene på iPhone.").font(.footnote)
                 }
+                Section("Start på nytt") {
+                    Button("Nullstill solofremdrift",role:.destructive) {resetScope = "solo"}.disabled(store.storageBlocked)
+                    Button("Nullstill pakkehistorikk",role:.destructive) {resetScope = "packs"}.disabled(packs.blocked)
+                    Text("Sletter resultater, svarte spørsmål og påbegynt runde i valgt del. Installerte pakker og innstillinger beholdes. Sofaduell og nettduell påvirkes ikke.").font(.footnote)
+                    if let error = store.error ?? packs.error {Text(error).foregroundStyle(.red)}
+                }
                 Section("Om Quizkrutt") {
-                    Text("Versjon \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "–") (\(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "–")) · 540 + 120 spørsmål")
+                    Text("Versjon \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "–") (\(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "–")) · grunnspill + quizbibliotek")
                     Text("Seks kategorier, tre nivåer og ti spørsmål per runde. Riktig svar gir 100 poeng; 700 poeng åpner neste nivå.")
                     Text("Egenformulerte spørsmål med KI-støtte. Innholdet er under redaksjonell testing.")
                 }
@@ -237,9 +252,14 @@ struct SettingsView: View {
                     NavigationLink("Personvern") {PrivacyView()}
                     NavigationLink("Hjelp og tilbakemelding") {SupportView()}
                     Text("Solospill og innstillinger lagres på denne enheten i appen. Ingen konto, annonser eller analyseverktøy i solospillet. Fremdrift deles ikke med nettversjonen. Hvis appen slettes, kan lokal fremdrift gå tapt.")
-                    Text("Quizpakker og sofaduell fungerer uten nett. Pakkehistorikk lagres separat fra grunnspillet. Sofadueller og kallenavn beholdes bare mens duellen pågår. Nettduell er ikke aktiv i denne betaversjonen.")
+                    Text("Nedlastede quizpakker og sofaduell fungerer uten nett. Pakkehistorikk lagres separat fra grunnspillet. Sofadueller og kallenavn beholdes bare mens duellen pågår. Nettduell bruker kallenavn og romkode uten konto; nett kreves for den delen.")
                 }
             }.navigationTitle("Innstillinger").toolbar {Button("Ferdig") {dismiss()}}
+            .confirmationDialog("Nullstill fremdrift?",isPresented:Binding(get:{resetScope != nil},set:{if !$0 {resetScope = nil}}),titleVisibility:.visible) {
+                Button("Nullstill",role:.destructive) {if resetScope == "solo" {store.resetProgress()} else {packs.resetProgress()}; resetScope = nil}
+                Button("Avbryt",role:.cancel) {resetScope = nil}
+            } message: {Text("Dette kan ikke angres. Resultater og påbegynt runde slettes i valgt del. Pakkene beholdes.")}
+
         }
     }
 }
